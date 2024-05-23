@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.model.ErrorResponse;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice()
@@ -31,6 +33,10 @@ public class ErrorHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ErrorResponse handler(final Exception e) {
 		log.error("Unexpected error: ", e);
-		return new ErrorResponse(e.getMessage(), Arrays.toString(e.getStackTrace()));
+		List<String> stackTraceList = Arrays.stream(e.getStackTrace())
+				.map(StackTraceElement::toString)
+				.collect(Collectors.toList());
+
+		return new ErrorResponse(e.getMessage(), stackTraceList);
 	}
 }

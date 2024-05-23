@@ -9,9 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.dto.StatsDtoRequest;
 import ru.practicum.dto.StatsDtoResponse;
-import ru.practicum.exception.IncorrectDateException;
 import ru.practicum.service.StatsService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -59,7 +59,7 @@ class StatsControllerTest {
 		response.setUri("/events/1");
 		response.setHits(1);
 
-		when(service.getStats(anyString(), anyString(), anyList(), anyBoolean())).thenReturn(List.of(response));
+		when(service.getStats(any(LocalDateTime.class), any(LocalDateTime.class), anyList(), anyBoolean())).thenReturn(List.of(response));
 
 		mockMvc.perform(get("/stats")
 						.param("start", start)
@@ -84,8 +84,6 @@ class StatsControllerTest {
 		response.setApp("ewm-main-service");
 		response.setUri("/events/1");
 		response.setHits(1);
-
-		when(service.getStats(anyString(), anyString(), anyList(), anyBoolean())).thenThrow(IncorrectDateException.class);
 
 		mockMvc.perform(get("/stats")
 						.param("start", start)

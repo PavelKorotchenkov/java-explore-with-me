@@ -31,7 +31,6 @@ public class BaseClient {
 		return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
 	}
 
-
 	private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable T body) {
 		HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
 
@@ -48,7 +47,6 @@ public class BaseClient {
 		return prepareGatewayResponse(statsServerResponse);
 	}
 
-	//TODO fix header
 	private HttpHeaders defaultHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

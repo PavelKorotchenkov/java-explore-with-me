@@ -7,11 +7,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.dto.StatsDtoRequest;
-import ru.practicum.dto.StatsDtoResponse;
+import ru.practicum.dto.StatsRequestDto;
+import ru.practicum.dto.StatsResponseDto;
 import ru.practicum.service.StatsService;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -34,11 +35,12 @@ class StatsControllerTest {
 
 	@Test
 	void saveStats() throws Exception {
-		StatsDtoRequest request = new StatsDtoRequest();
+		StatsRequestDto request = new StatsRequestDto();
 		request.setApp("ewm-main-service");
 		request.setUri("/events/1");
 		request.setIp("192.163.0.1");
-		request.setTimestamp("2024-05-19 11:00:23");
+		LocalDateTime localDateTime = LocalDateTime.of(2024, Month.MAY, 19, 11, 0, 23);
+		request.setTimestamp(localDateTime);
 
 		mockMvc.perform(post("/hit")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -54,7 +56,7 @@ class StatsControllerTest {
 		List<String> uris = List.of("/events/1");
 		boolean unique = false;
 
-		StatsDtoResponse response = new StatsDtoResponse();
+		StatsResponseDto response = new StatsResponseDto();
 		response.setApp("ewm-main-service");
 		response.setUri("/events/1");
 		response.setHits(1);
@@ -80,7 +82,7 @@ class StatsControllerTest {
 		List<String> uris = List.of("/events/1");
 		boolean unique = false;
 
-		StatsDtoResponse response = new StatsDtoResponse();
+		StatsResponseDto response = new StatsResponseDto();
 		response.setApp("ewm-main-service");
 		response.setUri("/events/1");
 		response.setHits(1);

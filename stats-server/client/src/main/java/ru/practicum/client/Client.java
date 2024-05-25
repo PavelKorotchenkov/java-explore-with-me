@@ -1,9 +1,13 @@
 package ru.practicum.client;
 
-import org.springframework.http.ResponseEntity;
+import ru.practicum.dto.ClientRequestDto;
+import ru.practicum.dto.StatsRequestDto;
+import ru.practicum.dto.StatsResponseDto;
 
-public interface Client<T> {
-	ResponseEntity<Object> saveStats(T parameters);
+import java.util.List;
 
-	ResponseEntity<Object> getStats(String start, String end, String uris, Boolean uniqueBoolean);
+public interface Client {
+	void saveStats(StatsRequestDto requestDto);
+
+	List<StatsResponseDto> getStats(ClientRequestDto requestDto);
 }

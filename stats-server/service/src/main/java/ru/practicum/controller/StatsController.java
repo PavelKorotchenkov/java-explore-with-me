@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.StatsDtoRequest;
-import ru.practicum.dto.StatsDtoResponse;
+import ru.practicum.dto.StatsRequestDto;
+import ru.practicum.dto.StatsResponseDto;
 import ru.practicum.exception.IncorrectDateException;
 import ru.practicum.service.StatsService;
 
@@ -22,14 +22,14 @@ public class StatsController {
 
 	@PostMapping("/hit")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void saveStats(@RequestBody StatsDtoRequest request) {
+	public void saveStats(@RequestBody StatsRequestDto request) {
 		log.info("Saving statistics: {}", request);
 		statsService.saveStats(request);
 	}
 
 	@GetMapping("/stats")
 	@ResponseStatus(HttpStatus.OK)
-	public List<StatsDtoResponse> getStats(@RequestParam String start,
+	public List<StatsResponseDto> getStats(@RequestParam String start,
 										   @RequestParam String end,
 										   @RequestParam(required = false) List<String> uris,
 										   @RequestParam(defaultValue = "false") Boolean unique) {
@@ -41,7 +41,7 @@ public class StatsController {
 			log.info("Incorrect time interval for getStats: from {} to {}", start, end);
 			throw new IncorrectDateException("End date should be after start date.");
 		}
-		List<StatsDtoResponse> stats = statsService.getStats(startLocalDateTime, endLocalDateTime, uris, unique);
+		List<StatsResponseDto> stats = statsService.getStats(startLocalDateTime, endLocalDateTime, uris, unique);
 		log.info("Statistics processing finished:  {}", stats);
 		return stats;
 	}

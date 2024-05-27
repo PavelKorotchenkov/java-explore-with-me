@@ -18,7 +18,7 @@ public class ExploreWithMe {
 	public static void main(String[] args) {
 		SpringApplication.run(ExploreWithMe.class, args);
 
-		Client client = new StatsClient("http://localhost:9090", new RestTemplateBuilder());
+		/*Client client = new StatsClient("http://localhost:9090", new RestTemplateBuilder());
 
 		StatsRequestDto statsRequestDto = new StatsRequestDto(
 				"ewm-main-service",
@@ -37,6 +37,6 @@ public class ExploreWithMe {
 
 		if (!response.isEmpty()) {
 			System.out.println(response.get(0));
-		}
+		}*/
 	}
 }

@@ -5,14 +5,15 @@ import ru.practicum.enums.EventState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity
 @Builder
+@Entity
 @Table(name = "events")
 public class Event {
 	@Id
@@ -23,7 +24,8 @@ public class Event {
 	@Column(name = "event_annotation")
 	private String annotation;
 
-	@Column(name = "category_id")
+	@ManyToOne
+	@JoinColumn(name = "category_id")
 	private Category category;
 
 	@Column(name = "event_confirmed_requests")
@@ -38,10 +40,12 @@ public class Event {
 	@Column(name = "event_date")
 	private LocalDateTime eventDate;
 
-	@Column(name = "initiator_id")
+	@ManyToOne
+	@JoinColumn(name = "initiator_id")
 	private User initiator;
 
-	@Column(name = "location_id")
+	@OneToOne
+	@JoinColumn(name = "location_id")
 	private Location location;
 
 	@Column(name = "event_paid")

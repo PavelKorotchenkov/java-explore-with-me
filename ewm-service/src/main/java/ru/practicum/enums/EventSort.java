@@ -1,5 +1,5 @@
 package ru.practicum.enums;
 
-public enum EventSortingRequest {
+public enum EventSort {
 	EVENT_DATE, VIEWS;
 }

@@ -2,16 +2,6 @@ package ru.practicum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import ru.practicum.client.Client;
-import ru.practicum.client.StatsClient;
-import ru.practicum.dto.ClientRequestDto;
-import ru.practicum.dto.StatsRequestDto;
-import ru.practicum.dto.StatsResponseDto;
-
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.List;
 
 @SpringBootApplication
 public class ExploreWithMe {

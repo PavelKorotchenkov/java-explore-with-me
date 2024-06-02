@@ -1,10 +1,13 @@
 package ru.practicum.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
+@ToString(of = "id")
 @Getter
 @Setter
 @Entity
@@ -15,7 +18,6 @@ public class Category {
 	@Column(name = "category_id")
 	private Long id;
 
-	@Column(name = "category_name")
+	@Column(name = "category_name", unique = true, nullable = false)
 	private String name;
-
 }

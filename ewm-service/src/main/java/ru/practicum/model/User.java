@@ -3,6 +3,7 @@ package ru.practicum.model;
 import lombok.*;
 
 import javax.persistence.*;
+
 @Getter
 @Setter
 @AllArgsConstructor

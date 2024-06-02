@@ -12,7 +12,4 @@ public class OffsetPageRequest extends PageRequest {
 	public static PageRequest createPageRequest(Integer from, Integer size) {
 		return PageRequest.of(from / size, size);
 	}
-	public static PageRequest createPageRequest(Integer from, Integer size, Sort sort) {
-		return PageRequest.of(from / size, size, sort);
-	}
 }

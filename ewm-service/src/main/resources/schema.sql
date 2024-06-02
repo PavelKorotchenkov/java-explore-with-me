@@ -1,27 +1,14 @@
-create TABLE IF NOT EXISTS events(
-    event_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
-    event_annotation varchar(200),
-    category_id BIGINT,
-    event_confirmed_requests BIGINT,
-    event_created_on timestamp WITHOUT TIME ZONE,
-    event_description varchar(1000),
-    event_date timestamp WITHOUT TIME ZONE,
-    initiator_id BIGINT,
-    location_id BIGINT,
-    event_paid boolean,
-    event_participant_limit int,
-    event_published_on timestamp WITHOUT TIME ZONE,
-    event_request_moderation boolean,
-    event_state varchar(10),
-    event_title varchar(50),
-    CONSTRAINT fk_events_to_category FOREIGN KEY(category_id) REFERENCES categories(category_id) ON delete CASCADE,
-    CONSTRAINT fk_events_to_users FOREIGN KEY(initiator_id) REFERENCES users(user_id) ON delete CASCADE,
-    CONSTRAINT fk_events_to_locations FOREIGN KEY(location_id) REFERENCES locations(location_id) ON delete CASCADE
-);
+drop table if exists categories cascade;
+drop table if exists events cascade;
+drop table if exists participation_requests cascade;
+drop table if exists locations cascade;
+drop table if exists users cascade;
+drop table if exists compilations cascade;
+drop table if exists compilation_events cascade;
 
 create TABLE IF NOT EXISTS categories(
     category_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
-    category_name varchar(50)
+    category_name varchar(50) UNIQUE NOT NULL
 );
 
 create TABLE IF NOT EXISTS users(
@@ -36,44 +23,48 @@ create TABLE IF NOT EXISTS locations(
     lon float
 );
 
-CREATE OR REPLACE FUNCTION distance(lat1 float, lon1 float, lat2 float, lon2 float)
-    RETURNS float
-AS
-'
-declare
-    dist float = 0;
-    rad_lat1 float;
-    rad_lat2 float;
-    theta float;
-    rad_theta float;
-BEGIN
-    IF lat1 = lat2 AND lon1 = lon2
-    THEN
-        RETURN dist;
-    ELSE
-        -- переводим градусы широты в радианы
-        rad_lat1 = pi() * lat1 / 180;
-        -- переводим градусы долготы в радианы
-        rad_lat2 = pi() * lat2 / 180;
-        -- находим разность долгот
-        theta = lon1 - lon2;
-        -- переводим градусы в радианы
-        rad_theta = pi() * theta / 180;
-        -- находим длину ортодромии
-        dist = sin(rad_lat1) * sin(rad_lat2) + cos(rad_lat1) * cos(rad_lat2) * cos(rad_theta);
+create TABLE IF NOT EXISTS events(
+    event_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
+    event_annotation varchar(2000),
+    category_id BIGINT,
+    event_confirmed_requests BIGINT,
+    event_created_on timestamp WITHOUT TIME ZONE,
+    event_description varchar(7000),
+    event_date timestamp WITHOUT TIME ZONE,
+    initiator_id BIGINT,
+    location_id BIGINT,
+    event_paid boolean,
+    event_participant_limit int,
+    event_published_on timestamp WITHOUT TIME ZONE,
+    event_request_moderation boolean,
+    event_state varchar(10),
+    event_title varchar(120),
+    CONSTRAINT fk_events_to_categories FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE,
+    CONSTRAINT fk_events_to_users FOREIGN KEY(initiator_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_events_to_locations FOREIGN KEY(location_id) REFERENCES locations(location_id) ON DELETE CASCADE
+);
 
-        IF dist > 1
-            THEN dist = 1;
-        END IF;
+create TABLE IF NOT EXISTS participation_requests(
+    participation_request_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
+    created timestamp WITHOUT TIME ZONE,
+    event_id BIGINT,
+    requester_id BIGINT,
+    status varchar(10),
+    CONSTRAINT fk_participation_requests_to_events FOREIGN KEY(event_id) REFERENCES events(event_id) ON DELETE CASCADE,
+    CONSTRAINT fk_participation_requests_to_users FOREIGN KEY(requester_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT uq_request UNIQUE(event_id, requester_id)
+);
 
-        dist = acos(dist);
-        -- переводим радианы в градусы
-        dist = dist * 180 / pi();
-        -- переводим градусы в километры
-        dist = dist * 60 * 1.8524;
+CREATE TABLE IF NOT EXISTS compilations (
+    compilation_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    pinned boolean,
+    title VARCHAR(50)
+);
 
-        RETURN dist;
-    END IF;
-END;
-'
-LANGUAGE PLPGSQL;
+CREATE TABLE IF NOT EXISTS compilation_events (
+    compilation_id BIGINT,
+    event_id BIGINT,
+    PRIMARY KEY (compilation_id, event_id),
+    FOREIGN KEY (compilation_id) REFERENCES compilations(compilation_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE
+);

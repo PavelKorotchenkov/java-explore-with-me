@@ -1,19 +1,21 @@
 package ru.practicum.service;
 
-import org.springframework.data.domain.Page;
-import ru.practicum.dto.EventShortDto;
+import ru.practicum.dto.event.EventFullDto;
+import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.enums.EventSort;
 
 import java.util.List;
 
 public interface PublicEventService {
-	Page<EventShortDto> getPublicEvents(String text,
-										List<Integer> categories,
-										boolean paid,
+	List<EventShortDto> getPublicEvents(String text,
+										List<Long> categories,
+										Boolean paid,
 										String rangeStart,
 										String rangeEnd,
 										boolean onlyAvailable,
-										String sort,
+										EventSort sort,
 										int from,
 										int size);
 
+	EventFullDto getEventById(long id);
 }

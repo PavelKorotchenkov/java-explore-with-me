@@ -1,21 +1,23 @@
 package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.Client;
-import ru.practicum.client.StatsClient;
 import ru.practicum.dto.ClientRequestDto;
-import ru.practicum.dto.EventShortDto;
 import ru.practicum.dto.StatsResponseDto;
+import ru.practicum.dto.event.EventDtoMapper;
+import ru.practicum.dto.event.EventFullDto;
+import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.enums.EventSort;
+import ru.practicum.enums.EventState;
+import ru.practicum.model.Event;
 import ru.practicum.repository.EventRepository;
-import ru.practicum.util.OffsetPageRequest;
 import ru.practicum.util.LocalDateTimeStringParser;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,51 +26,112 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PublicEventServiceImpl implements PublicEventService {
 
-	private final Client client;
 	private final EventRepository eventRepository;
+	private final Client client;
 
+	@Transactional(readOnly = true)
 	@Override
-	public Page<EventShortDto> getPublicEvents(String text, List<Integer> categories, boolean paid, String rangeStart,
-											   String rangeEnd, boolean onlyAvailable, String sortValue, int from, int size) {
+	public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid, String rangeStart,
+											   String rangeEnd, boolean onlyAvailable, EventSort sortValue, int from, int size) {
 
-		LocalDateTime start = LocalDateTimeStringParser.parseStringToLocalDateTime(rangeStart);
-		LocalDateTime end = LocalDateTimeStringParser.parseStringToLocalDateTime(rangeEnd);
+		LocalDateTime startDate = getStartDate(rangeStart);
+		LocalDateTime endDate = getEndDate(rangeEnd);
+		validateDate(endDate, startDate);
+		String normalizedText = normalizeText(text);
 
-		Sort sort = Sort.by(Sort.Direction.DESC, "EventDate");
+		List<Event> resultEvents;
 
-		//TODO сортировка по VIEWS
-		/*if (sortValue.equals("VIEWS")) {
-			sort = Sort.by(Sort.Direction.DESC, "EventDate");
-		}*/
-
-		PageRequest pageRequest = OffsetPageRequest.createPageRequest(from, size, sort);
-
-		Page<EventShortDto> resultEvents = eventRepository.findPublicEvents(text, categories, paid, start, end, onlyAvailable, pageRequest);
+		if (onlyAvailable) {
+			if (endDate == null) {
+				resultEvents = eventRepository.findAvailablePublicEventsWithoutEndDate(normalizedText, categories, paid, startDate, EventState.PUBLISHED);
+			} else {
+				resultEvents = eventRepository.findAvailablePublicEvents(normalizedText, categories, paid, startDate, endDate, EventState.PUBLISHED);
+			}
+		} else {
+			if (endDate == null) {
+				resultEvents = eventRepository.findAllPublicEventsWithoutEndDate(normalizedText, categories, paid, startDate, EventState.PUBLISHED);
+			} else {
+				resultEvents = eventRepository.findAllPublicEvents(normalizedText, categories, paid, startDate, endDate, EventState.PUBLISHED);
+			}
+		}
 
 		List<String> uris = resultEvents.stream()
-				.map(EventShortDto::getId)
+				.map(Event::getId)
 				.map(id -> "/events/" + id)
 				.collect(Collectors.toList());
 
-		List<StatsResponseDto> stats = getStats(start, end, uris, false);
+		List<StatsResponseDto> stats = getStats(startDate, LocalDateTime.now(), uris, false);
 
 		Map<String, Long> viewsMap = stats.stream()
 				.collect(Collectors.toMap(StatsResponseDto::getUri, StatsResponseDto::getHits));
 
-		resultEvents.forEach(event -> {
-			String eventUri = "/events" + event.getId();
+		List<EventShortDto> eventShortDtos = resultEvents.stream()
+				.map(EventDtoMapper.INSTANCE::eventToEventShortDto).collect(Collectors.toList());
+
+		eventShortDtos.forEach(event -> {
+			String eventUri = "/events/" + event.getId();
 			long views = viewsMap.getOrDefault(eventUri, 0L);
 			event.setViews(views);
 		});
 
-		return resultEvents;
+		if (sortValue != null) {
+			if (sortValue.equals(EventSort.VIEWS)) {
+				eventShortDtos.sort(Comparator.comparing(EventShortDto::getViews).reversed());
+			}
+		}
+
+		int startPage = Math.min(from * size, eventShortDtos.size());
+		int endPage = Math.min((from + 1) * size, eventShortDtos.size());
+		return eventShortDtos.subList(startPage, endPage);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public EventFullDto getEventById(long id) {
+		Event event = eventRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Event with id=" + id + " not found"));
+		if (!event.getState().equals(EventState.PUBLISHED)) {
+			throw new EntityNotFoundException("Event with id=" + id + " not found");
+		}
+
+		EventFullDto result = EventDtoMapper.INSTANCE.eventToEventFullDto(event);
+
+		String uri = "/events/" + event.getId();
+		List<String> uris = List.of(uri);
+		List<StatsResponseDto> stats = getStats(event.getPublishedOn(), LocalDateTime.now(), uris, true);
+
+		if (!stats.isEmpty()) {
+			long hits = stats.get(0).getHits();
+			result.setViews(hits);
+		}
+
+		return result;
+	}
+
+	private String normalizeText(String text) {
+		return text != null ? text.toLowerCase() : null;
+	}
+
+	private void validateDate(LocalDateTime endDate, LocalDateTime startDate) {
+		if (endDate != null && endDate.isBefore(startDate)) {
+			throw new IllegalArgumentException("End date should be after start date.");
+		}
 	}
 
 	private List<StatsResponseDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-		//TODO передавать url через параметры окружения или через настройки приложения
-		//TODO передавать клиента через autowired?
-		Client client = new StatsClient("http://localhost:9090", new RestTemplateBuilder());
 		ClientRequestDto requestDto = new ClientRequestDto(start, end, uris, unique);
 		return client.getStats(requestDto);
+	}
+
+	private LocalDateTime getStartDate(String rangeStart) {
+		return (rangeStart != null && !rangeStart.isEmpty())
+				? LocalDateTimeStringParser.parseStringToLocalDateTime(rangeStart)
+				: LocalDateTime.now();
+	}
+
+	private LocalDateTime getEndDate(String rangeEnd) {
+		return (rangeEnd != null && !rangeEnd.isEmpty())
+				? LocalDateTimeStringParser.parseStringToLocalDateTime(rangeEnd)
+				: null;
 	}
 }

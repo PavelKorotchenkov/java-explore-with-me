@@ -1,27 +1,22 @@
 package ru.practicum.dto.user;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Data
 public class NewUserRequest {
 	@Email
-	@Max(254)
-	@Min(6)
+	@Size(min = 6, max = 254)
 	@NotBlank
-	@NotNull
+	@NotEmpty
 	private String email;
 
-	@Max(250)
-	@Min(2)
+	@Size(min = 2, max = 250)
 	@NotBlank
-	@NotNull
+	@NotEmpty
 	private String name;
 }

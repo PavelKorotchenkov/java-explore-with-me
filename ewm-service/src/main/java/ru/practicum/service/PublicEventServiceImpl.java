@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
 public class PublicEventServiceImpl implements PublicEventService {
 
 	private final EventRepository eventRepository;
+	private final EventDtoMapper eventDtoMapper;
 	private final Client client;
+
 
 	@Transactional(readOnly = true)
 	@Override
@@ -66,7 +68,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 				.collect(Collectors.toMap(StatsResponseDto::getUri, StatsResponseDto::getHits));
 
 		List<EventShortDto> eventShortDtos = resultEvents.stream()
-				.map(EventDtoMapper.INSTANCE::eventToEventShortDto).collect(Collectors.toList());
+				.map(eventDtoMapper::eventToEventShortDto).collect(Collectors.toList());
 
 		eventShortDtos.forEach(event -> {
 			String eventUri = "/events/" + event.getId();
@@ -94,7 +96,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 			throw new EntityNotFoundException("Event with id=" + id + " not found");
 		}
 
-		EventFullDto result = EventDtoMapper.INSTANCE.eventToEventFullDto(event);
+		EventFullDto result = eventDtoMapper.eventToEventFullDto(event);
 
 		String uri = "/events/" + event.getId();
 		List<String> uris = List.of(uri);

@@ -30,7 +30,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 	private final ParticipationRequestRepository participationRequestRepository;
 	private final EventRepository eventRepository;
 	private final UserRepository userRepository;
-
+	private final ParticipationRequestMapper participationRequestMapper;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -40,7 +40,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 
 		List<ParticipationRequest> result = participationRequestRepository.findByRequesterId(userId);
 		return result.stream()
-				.map(ParticipationRequestMapper.INSTANCE::toDto)
+				.map(participationRequestMapper::toDto)
 				.collect(Collectors.toList());
 	}
 
@@ -72,7 +72,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 		participationRequest.setEvent(event);
 
 		ParticipationRequest savedParticipationRequest = participationRequestRepository.save(participationRequest);
-		return ParticipationRequestMapper.INSTANCE.toDto(savedParticipationRequest);
+		return participationRequestMapper.toDto(savedParticipationRequest);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 		}
 
 		participationRequest.setStatus(ParticipationRequestStatus.CANCELED);
-		return ParticipationRequestMapper.INSTANCE.toDto(participationRequestRepository.save(participationRequest));
+		return participationRequestMapper.toDto(participationRequestRepository.save(participationRequest));
 	}
 
 	private void validateRequest(long userId, long eventId, Event event, long countParticipants, long participantsLimit) {

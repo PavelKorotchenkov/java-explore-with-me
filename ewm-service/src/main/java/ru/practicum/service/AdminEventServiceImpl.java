@@ -31,6 +31,8 @@ public class AdminEventServiceImpl implements AdminEventService {
 	private final LocationRepository locationRepository;
 	private final EventRepository eventRepository;
 	private final CategoryRepository categoryRepository;
+	private final LocationDtoMapper locationDtoMapper;
+	private final EventDtoMapper eventDtoMapper;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -49,7 +51,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 					.findAllEventsForAdmin(users, validStates, categories, startDate, endDate, pageable);
 		}
 
-		return events.getContent().stream().map(EventDtoMapper.INSTANCE::eventToEventFullDto)
+		return events.getContent().stream().map(eventDtoMapper::eventToEventFullDto)
 				.collect(Collectors.toList());
 	}
 
@@ -59,7 +61,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 		Event event = eventRepository.findById(eventId)
 				.orElseThrow(() -> new EntityNotFoundException("Event with id='" + eventId + "' not found"));
 		applyEventUpdate(event, updateRequest);
-		return EventDtoMapper.INSTANCE.eventToEventFullDto(eventRepository.save(event));
+		return eventDtoMapper.eventToEventFullDto(eventRepository.save(event));
 	}
 
 	private void applyEventUpdate(Event event, UpdateEventAdminRequest updateRequest) {
@@ -112,7 +114,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 		}
 
 		if (updateRequest.getLocation() != null) {
-			Location location = LocationDtoMapper.INSTANCE.locationDtoToLocation(updateRequest.getLocation());
+			Location location = locationDtoMapper.locationDtoToLocation(updateRequest.getLocation());
 			locationRepository.save(location);
 			event.setLocation(location);
 		}

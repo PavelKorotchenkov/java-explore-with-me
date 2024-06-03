@@ -2,6 +2,7 @@ package ru.practicum.dto.compilation;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.dto.category.CategoryDto;
@@ -17,9 +18,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CompilationDtoMapper {
-	CompilationDtoMapper INSTANCE = Mappers.getMapper(CompilationDtoMapper.class);
 
 	@Mapping(source = "events", target = "events", qualifiedByName = "eventIdsToEvents")
 	Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto);
@@ -81,4 +81,6 @@ public interface CompilationDtoMapper {
 		}
 		return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
+
+	CompilationDtoMapper INSTANCE = Mappers.getMapper(CompilationDtoMapper.class);
 }

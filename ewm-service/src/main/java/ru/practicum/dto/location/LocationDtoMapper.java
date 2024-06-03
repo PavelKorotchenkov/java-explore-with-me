@@ -1,14 +1,12 @@
 package ru.practicum.dto.location;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 import ru.practicum.model.Location;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface LocationDtoMapper {
-	LocationDtoMapper INSTANCE = Mappers.getMapper(LocationDtoMapper.class);
 
 	Location locationDtoToLocation(LocationDto locationDto);
 
-	LocationDto locationToLocationDto(Location location);
 }

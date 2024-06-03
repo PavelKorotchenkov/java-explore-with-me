@@ -24,11 +24,12 @@ import java.util.stream.Collectors;
 public class CompilationServiceImpl implements CompilationService {
 	private final CompilationRepository compilationRepository;
 	private final EventRepository eventRepository;
+	private final CompilationDtoMapper compilationDtoMapper;
 
 	@Override
 	public CompilationDto postNewCompilation(NewCompilationDto compilationDto) {
-		Compilation compilationToSave = CompilationDtoMapper.INSTANCE.newCompilationDtoToCompilation(compilationDto);
-		return CompilationDtoMapper.INSTANCE.compilationToCompilationDto(compilationRepository.save(compilationToSave));
+		Compilation compilationToSave = compilationDtoMapper.newCompilationDtoToCompilation(compilationDto);
+		return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilationToSave));
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class CompilationServiceImpl implements CompilationService {
 			compilation.setTitle(updateCompilationRequest.getTitle());
 		}
 
-		return CompilationDtoMapper.INSTANCE.compilationToCompilationDto(compilationRepository.save(compilation));
+		return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilation));
 	}
 
 	@Transactional(readOnly = true)
@@ -69,7 +70,7 @@ public class CompilationServiceImpl implements CompilationService {
 		}
 
 		return compilationDtoPage.getContent().stream()
-				.map(CompilationDtoMapper.INSTANCE::compilationToCompilationDto)
+				.map(compilationDtoMapper::compilationToCompilationDto)
 				.collect(Collectors.toList());
 	}
 
@@ -78,6 +79,6 @@ public class CompilationServiceImpl implements CompilationService {
 	public CompilationDto getCompilationById(long compId) {
 		Compilation compilation = compilationRepository.findById(compId)
 				.orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
-		return CompilationDtoMapper.INSTANCE.compilationToCompilationDto(compilation);
+		return compilationDtoMapper.compilationToCompilationDto(compilation);
 	}
 }

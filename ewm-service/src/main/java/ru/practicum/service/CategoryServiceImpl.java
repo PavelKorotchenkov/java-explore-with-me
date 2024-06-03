@@ -23,6 +23,7 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final EventRepository eventRepository;
+	private final CategoryDtoMapper categoryDtoMapper;
 
 	@Transactional
 	@Override
@@ -32,8 +33,8 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new CategoryUniqueNameViolationException("Attempt to create category with name='" + newCategoryDto.getName() + "' failed");
 		}
 
-		Category saved = categoryRepository.save(CategoryDtoMapper.INSTANCE.newCategoryDtoToCategory(newCategoryDto));
-		return CategoryDtoMapper.INSTANCE.categoryToCategoryDto(saved);
+		Category saved = categoryRepository.save(categoryDtoMapper.newCategoryDtoToCategory(newCategoryDto));
+		return categoryDtoMapper.categoryToCategoryDto(saved);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 		category.setName(newCategoryDto.getName());
 		Category saved = categoryRepository.save(category);
-		return CategoryDtoMapper.INSTANCE.categoryToCategoryDto(saved);
+		return categoryDtoMapper.categoryToCategoryDto(saved);
 	}
 
 	@Transactional(readOnly = true)
@@ -68,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<CategoryDto> getCategories(Pageable pageable) {
 		return categoryRepository
 				.findAll(pageable)
-				.map(CategoryDtoMapper.INSTANCE::categoryToCategoryDto)
+				.map(categoryDtoMapper::categoryToCategoryDto)
 				.getContent();
 	}
 
@@ -79,6 +80,6 @@ public class CategoryServiceImpl implements CategoryService {
 		Category category = categoryRepository.findById(catId)
 				.orElseThrow(() -> new EntityNotFoundException("Category with id='" + catId + "' not found"));
 
-		return CategoryDtoMapper.INSTANCE.categoryToCategoryDto(category);
+		return categoryDtoMapper.categoryToCategoryDto(category);
 	}
 }

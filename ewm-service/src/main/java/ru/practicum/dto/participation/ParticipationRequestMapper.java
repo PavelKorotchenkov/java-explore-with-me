@@ -2,8 +2,8 @@ package ru.practicum.dto.participation;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 import ru.practicum.model.Event;
 import ru.practicum.model.ParticipationRequest;
 import ru.practicum.model.User;
@@ -11,9 +11,8 @@ import ru.practicum.model.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ParticipationRequestMapper {
-	ParticipationRequestMapper INSTANCE = Mappers.getMapper(ParticipationRequestMapper.class);
 
 	@Mapping(source = "event", target = "event", qualifiedByName = "eventIdToEvent")
 	@Mapping(source = "requester", target = "requester", qualifiedByName = "userIdToUser")

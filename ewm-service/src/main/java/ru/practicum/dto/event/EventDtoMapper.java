@@ -2,8 +2,8 @@ package ru.practicum.dto.event;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 import ru.practicum.dto.location.LocationDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.model.Category;
@@ -14,10 +14,8 @@ import ru.practicum.model.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EventDtoMapper {
-
-	EventDtoMapper INSTANCE = Mappers.getMapper(EventDtoMapper.class);
 
 	@Mapping(source = "category", target = "category", qualifiedByName = "categoryIdToCategory")
 	@Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "stringToLocalDateTime")

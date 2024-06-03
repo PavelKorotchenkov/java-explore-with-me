@@ -34,12 +34,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 	private final LocationRepository locationRepository;
 	private final CategoryRepository categoryRepository;
 	private final ParticipationRequestRepository participationRequestRepository;
+	private final ParticipationRequestMapper participationRequestMapper;
+	private final LocationDtoMapper locationDtoMapper;
+	private final EventDtoMapper eventDtoMapper;
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<EventShortDto> getPrivateEvents(long initiatorId, Pageable pageable) {
 		return eventRepository.findEventsByInitiatorId(initiatorId, pageable)
-				.map(EventDtoMapper.INSTANCE::eventToEventShortDto)
+				.map(eventDtoMapper::eventToEventShortDto)
 				.getContent();
 	}
 
@@ -49,13 +52,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 		LocalDateTime eventDate = LocalDateTimeStringParser.parseStringToLocalDateTime(newEventDto.getEventDate());
 		validateEventDate(eventDate);
 
-		Event event = EventDtoMapper.INSTANCE.newEventDtoToEvent(newEventDto);
+		Event event = eventDtoMapper.newEventDtoToEvent(newEventDto);
 		User initiator = userRepository.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User with id='" + userId + "' not found"));
 		Category category = categoryRepository.findById(newEventDto.getCategory())
 				.orElseThrow(() -> new EntityNotFoundException("Category with id='" + newEventDto.getCategory() + "' not found"));
 
-		Location location = locationRepository.save(LocationDtoMapper.INSTANCE.locationDtoToLocation(newEventDto.getLocation()));
+		Location location = locationRepository.save(locationDtoMapper.locationDtoToLocation(newEventDto.getLocation()));
 
 		event.setInitiator(initiator);
 		event.setCategory(category);
@@ -64,7 +67,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 		event.setState(EventState.PENDING);
 		event.setConfirmedRequests(0L);
 		Event savedEvent = eventRepository.save(event);
-		return EventDtoMapper.INSTANCE.eventToEventFullDto(savedEvent);
+		return eventDtoMapper.eventToEventFullDto(savedEvent);
 	}
 
 	@Transactional(readOnly = true)
@@ -74,7 +77,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 				.orElseThrow(() -> new EntityNotFoundException("Event with id='" + eventId + "' not found"));
 
 		checkUserIsInitiator(event, userId);
-		return EventDtoMapper.INSTANCE.eventToEventFullDto(event);
+		return eventDtoMapper.eventToEventFullDto(event);
 	}
 
 	@Transactional
@@ -89,7 +92,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 		}
 
 		applyInitiatorChanges(event, updateEventUserRequest);
-		return EventDtoMapper.INSTANCE.eventToEventFullDto(eventRepository.save(event));
+		return eventDtoMapper.eventToEventFullDto(eventRepository.save(event));
 	}
 
 	@Transactional(readOnly = true)
@@ -97,7 +100,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 	public List<ParticipationRequestDto> getPrivateEventParticipationRequests(long userId, long eventId) {
 		List<ParticipationRequest> requests = participationRequestRepository.findByEventIdAndRequesterIdNot(eventId, userId);
 
-		return requests.stream().map(ParticipationRequestMapper.INSTANCE::toDto).collect(Collectors.toList());
+		return requests.stream().map(participationRequestMapper::toDto).collect(Collectors.toList());
 	}
 
 	@Transactional
@@ -163,11 +166,11 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 		//сохраняем заявки с новым статусом
 		participationRequestRepository.saveAll(requestsListToUpdate);
 		List<ParticipationRequestDto> confirmedDtos = confirmedRequests.stream()
-				.map(ParticipationRequestMapper.INSTANCE::toDto)
+				.map(participationRequestMapper::toDto)
 				.collect(Collectors.toList());
 
 		List<ParticipationRequestDto> rejectedDtos = rejectedRequests.stream()
-				.map(ParticipationRequestMapper.INSTANCE::toDto)
+				.map(participationRequestMapper::toDto)
 				.collect(Collectors.toList());
 		EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
 		result.setConfirmedRequests(confirmedDtos);
@@ -206,7 +209,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 		}
 
 		if (updateEventUserRequest.getLocation() != null) {
-			Location location = LocationDtoMapper.INSTANCE.locationDtoToLocation(updateEventUserRequest.getLocation());
+			Location location = locationDtoMapper.locationDtoToLocation(updateEventUserRequest.getLocation());
 			event.setLocation(location);
 		}
 

@@ -1,12 +1,11 @@
 package ru.practicum.dto.user;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 import ru.practicum.model.User;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserDtoMapper {
-	UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
 	User newUserRequestToUser(NewUserRequest newUserRequest);
 

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
+	private final UserDtoMapper userDtoMapper;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return users.getContent().stream()
-				.map(UserDtoMapper.INSTANCE::userToUserDto)
+				.map(userDtoMapper::userToUserDto)
 				.collect(Collectors.toList());
 	}
 
@@ -42,8 +43,8 @@ public class UserServiceImpl implements UserService {
 		if (existingUser.isPresent()) {
 			throw new UserUniqueEmailViolationException("Attempt to create user with email '" + newUserRequest.getEmail() + "' failed");
 		}
-		User savedUser = userRepository.save(UserDtoMapper.INSTANCE.newUserRequestToUser(newUserRequest));
-		return UserDtoMapper.INSTANCE.userToUserDto(savedUser);
+		User savedUser = userRepository.save(userDtoMapper.newUserRequestToUser(newUserRequest));
+		return userDtoMapper.userToUserDto(savedUser);
 	}
 
 	@Override

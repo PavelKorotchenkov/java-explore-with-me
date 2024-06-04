@@ -34,7 +34,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ParticipationRequestDto> getRequests(long userId) {
+	public List<ParticipationRequestDto> getAllByRequesterId(long userId) {
 		userRepository.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User with id='" + userId + "' not found"));
 
@@ -46,22 +46,21 @@ public class ParticipationServiceImpl implements ParticipationService {
 
 	@Transactional
 	@Override
-	public ParticipationRequestDto createRequest(long userId, long eventId) {
+	public ParticipationRequestDto createNew(long userId, long eventId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User with id='" + userId + "' not found"));
 		Event event = eventRepository.findById(eventId)
 				.orElseThrow(() -> new EntityNotFoundException("Event with id='" + eventId + "' not found"));
 
-		long countParticipants = event.getConfirmedRequests();
+		long participantsCount = participationRequestRepository.countByEventIdAndStatus(event.getId(), ParticipationRequestStatus.CONFIRMED);
 		long participantsLimit = event.getParticipantLimit();
-		validateRequest(userId, eventId, event, countParticipants, participantsLimit);
+		validateRequest(userId, eventId, event, participantsCount, participantsLimit);
 
 		ParticipationRequest participationRequest = new ParticipationRequest();
 
 		// если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного
 		if (!event.getRequestModeration() || participantsLimit == 0) {
 			participationRequest.setStatus(ParticipationRequestStatus.CONFIRMED);
-			event.setConfirmedRequests(event.getConfirmedRequests() + 1L);
 			eventRepository.save(event);
 		} else {
 			participationRequest.setStatus(ParticipationRequestStatus.PENDING);
@@ -76,7 +75,7 @@ public class ParticipationServiceImpl implements ParticipationService {
 	}
 
 	@Override
-	public ParticipationRequestDto cancelRequest(long userId, long requestId) {
+	public ParticipationRequestDto cancel(long userId, long requestId) {
 		ParticipationRequest participationRequest = participationRequestRepository.findById(requestId)
 				.orElseThrow(() -> new EntityNotFoundException("request with id='" + requestId + "' not found"));
 

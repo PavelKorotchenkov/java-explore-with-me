@@ -12,7 +12,7 @@ import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.dto.participation.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.participation.EventRequestStatusUpdateResult;
 import ru.practicum.dto.participation.ParticipationRequestDto;
-import ru.practicum.service.PrivateEventService;
+import ru.practicum.service.EventService;
 import ru.practicum.util.OffsetPageRequest;
 
 import javax.validation.Valid;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrivateEventController {
 
-	private final PrivateEventService privateEventService;
+	private final EventService eventService;
 
 	@GetMapping("/{userId}/events")
 	@ResponseStatus(HttpStatus.OK)
@@ -33,7 +33,7 @@ public class PrivateEventController {
 										 @RequestParam(defaultValue = "10") int size) {
 		log.info("Request for getting events initiated by: userId: {}, from: {}, size: {}", userId, from, size);
 		Pageable pageRequest = OffsetPageRequest.createPageRequest(from, size);
-		List<EventShortDto> result = privateEventService.getPrivateEvents(userId, pageRequest);
+		List<EventShortDto> result = eventService.getAllByInitiator(userId, pageRequest);
 		log.info("Response for getting events: found {} events", result.size());
 		return result;
 	}
@@ -43,7 +43,7 @@ public class PrivateEventController {
 	public EventFullDto postNewEvent(@PathVariable Long userId,
 									 @RequestBody @Valid NewEventDto newEventDto) {
 		log.info("Request for creating a new Event: userId: {}, NewEventDto: {}", userId, newEventDto);
-		EventFullDto result = privateEventService.postNewEvent(userId, newEventDto);
+		EventFullDto result = eventService.postNewByInitiator(userId, newEventDto);
 		log.info("Response for creating a new Event: EventFullDto: {}", result);
 		return result;
 	}
@@ -53,7 +53,7 @@ public class PrivateEventController {
 	public EventFullDto getEventFullInfo(@PathVariable Long userId,
 										 @PathVariable Long eventId) {
 		log.info("Request for getting full info about event: {} by user: {}", eventId, userId);
-		EventFullDto result = privateEventService.getPrivateEventFullInfo(userId, eventId);
+		EventFullDto result = eventService.getOneByInitiator(userId, eventId);
 		log.info("Response for getting full info about event: {}", result);
 		return result;
 	}
@@ -64,7 +64,7 @@ public class PrivateEventController {
 									@PathVariable Long eventId,
 									@RequestBody @Valid UpdateEventUserRequest updateEventUserRequest) {
 		log.info("Request for updating event: {} by user: {}, new event: {}", eventId, userId, updateEventUserRequest);
-		EventFullDto result = privateEventService.updateEvent(userId, eventId, updateEventUserRequest);
+		EventFullDto result = eventService.updateByInitiator(userId, eventId, updateEventUserRequest);
 		log.info("Response for updating event: {}", result);
 		return result;
 	}
@@ -74,7 +74,7 @@ public class PrivateEventController {
 	public List<ParticipationRequestDto> getEventParticipationRequests(@PathVariable Long userId,
 																	   @PathVariable Long eventId) {
 		log.info("Request for getting event participation requests for event: {} by user: {}", eventId, userId);
-		List<ParticipationRequestDto> result = privateEventService.getPrivateEventParticipationRequests(userId, eventId);
+		List<ParticipationRequestDto> result = eventService.getRequests(userId, eventId);
 		log.info("Response for getting event participation requests: {}", result);
 		return result;
 	}
@@ -85,7 +85,7 @@ public class PrivateEventController {
 																		   @PathVariable Long eventId,
 																		   @RequestBody EventRequestStatusUpdateRequest request) {
 		log.info("Request for getting event participation requests for event: {} by user: {}, request: {}", eventId, userId, request);
-		EventRequestStatusUpdateResult result = privateEventService.updateParticipationRequestStatus(userId, eventId, request);
+		EventRequestStatusUpdateResult result = eventService.updateRequestStatus(userId, eventId, request);
 		log.info("Response for getting event participation requests: {}", result);
 		return result;
 	}

@@ -24,7 +24,7 @@ public class PublicCategoryController {
 										   @RequestParam(defaultValue = "10") int size) {
 		log.info("Request for a page of categories with params: from: {}, size: {}", from, size);
 		Pageable page = OffsetPageRequest.createPageRequest(from, size);
-		List<CategoryDto> result = categoryService.getCategories(page);
+		List<CategoryDto> result = categoryService.getAll(page);
 		log.info("Response for a page of categories, found {} categories", result.size());
 		return result;
 	}
@@ -33,7 +33,7 @@ public class PublicCategoryController {
 	@ResponseStatus(HttpStatus.OK)
 	public CategoryDto getCategories(@PathVariable Long catId) {
 		log.info("Request for the category with id: {}", catId);
-		CategoryDto result = categoryService.getCategoryById(catId);
+		CategoryDto result = categoryService.getById(catId);
 		log.info("Response for the category: {}", result);
 		return result;
 	}

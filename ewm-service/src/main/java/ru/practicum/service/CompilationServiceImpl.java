@@ -27,19 +27,19 @@ public class CompilationServiceImpl implements CompilationService {
 	private final CompilationDtoMapper compilationDtoMapper;
 
 	@Override
-	public CompilationDto postNewCompilation(NewCompilationDto compilationDto) {
+	public CompilationDto postNew(NewCompilationDto compilationDto) {
 		Compilation compilationToSave = compilationDtoMapper.newCompilationDtoToCompilation(compilationDto);
 		return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilationToSave));
 	}
 
 	@Override
-	public void deleteCompilation(long compId) {
+	public void delete(long compId) {
 		compilationRepository.deleteById(compId);
 	}
 
 	@Transactional
 	@Override
-	public CompilationDto updateCompilation(long compId, UpdateCompilationRequest updateCompilationRequest) {
+	public CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest) {
 		Compilation compilation = compilationRepository.findById(compId)
 				.orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
 
@@ -61,7 +61,7 @@ public class CompilationServiceImpl implements CompilationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<CompilationDto> getCompilations(Boolean pinned, Pageable pageable) {
+	public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
 		Page<Compilation> compilationDtoPage;
 		if (pinned == null) {
 			compilationDtoPage = compilationRepository.findAll(pageable);
@@ -76,7 +76,7 @@ public class CompilationServiceImpl implements CompilationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public CompilationDto getCompilationById(long compId) {
+	public CompilationDto getById(long compId) {
 		Compilation compilation = compilationRepository.findById(compId)
 				.orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
 		return compilationDtoMapper.compilationToCompilationDto(compilation);

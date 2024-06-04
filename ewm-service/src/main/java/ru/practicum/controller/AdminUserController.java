@@ -24,11 +24,11 @@ public class AdminUserController {
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
-								  @RequestParam(defaultValue = "0") int from,
-								  @RequestParam(defaultValue = "10") int size) {
+	                              @RequestParam(defaultValue = "0") int from,
+	                              @RequestParam(defaultValue = "10") int size) {
 		log.info("Get users request: ids: {}, from: {}, size; {}", ids, from, size);
 		Pageable page = OffsetPageRequest.createPageRequest(from, size);
-		List<UserDto> users = userService.getUsers(ids, page);
+		List<UserDto> users = userService.getAll(ids, page);
 		log.info("Get users response: found {} users: {}", users.size(), users);
 		return users;
 	}
@@ -37,7 +37,7 @@ public class AdminUserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserDto createNewUser(@RequestBody @Valid NewUserRequest newUserRequest) {
 		log.info("New user create request: {}", newUserRequest);
-		UserDto savedUser = userService.createNewUser(newUserRequest);
+		UserDto savedUser = userService.createNew(newUserRequest);
 		log.info("New user created: {}", savedUser);
 		return savedUser;
 	}
@@ -46,6 +46,6 @@ public class AdminUserController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteUser(@PathVariable Long userId) {
 		log.info("Delete user request, userId: {}", userId);
-		userService.deleteUser(userId);
+		userService.delete(userId);
 	}
 }

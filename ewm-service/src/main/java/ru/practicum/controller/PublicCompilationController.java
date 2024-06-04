@@ -26,7 +26,7 @@ public class PublicCompilationController {
 												@RequestParam(defaultValue = "10") int size) {
 		log.info("Request for compilations: pinned: {}, from: {}, size: {}", pinned, from, size);
 		Pageable page = OffsetPageRequest.createPageRequest(from, size);
-		List<CompilationDto> result = compilationService.getCompilations(pinned, page);
+		List<CompilationDto> result = compilationService.getAll(pinned, page);
 		log.info("Response for compilations: result: {}", result);
 		return result;
 	}
@@ -35,7 +35,7 @@ public class PublicCompilationController {
 	@ResponseStatus(HttpStatus.OK)
 	public CompilationDto getCompilation(@PathVariable Long compId) {
 		log.info("Request for the compilation with id: {}", compId);
-		CompilationDto result = compilationService.getCompilationById(compId);
+		CompilationDto result = compilationService.getById(compId);
 		log.info("Response for the compilation: {}", result);
 		return result;
 	}

@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<UserDto> getUsers(List<Long> ids, Pageable pageable) {
+	public List<UserDto> getAll(List<Long> ids, Pageable pageable) {
 		Page<User> users;
 		if (ids != null && !ids.isEmpty()) {
 			users = userRepository.findByIds(ids, pageable);
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto createNewUser(NewUserRequest newUserRequest) {
+	public UserDto createNew(NewUserRequest newUserRequest) {
 		Optional<User> existingUser = userRepository.findByEmail(newUserRequest.getEmail());
 		if (existingUser.isPresent()) {
 			throw new UserUniqueEmailViolationException("Attempt to create user with email '" + newUserRequest.getEmail() + "' failed");
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUser(long userId) {
+	public void delete(long userId) {
 		userRepository.deleteById(userId);
 	}
 }

@@ -7,10 +7,10 @@ import ru.practicum.dto.user.UserDto;
 import java.util.List;
 
 public interface UserService {
-	UserDto createNewUser(NewUserRequest newUserRequest);
+	UserDto createNew(NewUserRequest newUserRequest);
 
-	List<UserDto> getUsers(List<Long> ids, Pageable pageable);
+	List<UserDto> getAll(List<Long> ids, Pageable pageable);
 
-	void deleteUser(long userId);
+	void delete(long userId);
 
 }

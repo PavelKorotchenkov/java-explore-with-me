@@ -20,7 +20,7 @@ public class PrivateParticipationController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<ParticipationRequestDto> getUserRequests(@PathVariable Long userId) {
 		log.info("Request for getting participation requests from user: {}", userId);
-		List<ParticipationRequestDto> result = participationService.getRequests(userId);
+		List<ParticipationRequestDto> result = participationService.getAllByRequesterId(userId);
 		log.info("Response for getting participation requests, found {} requests", userId);
 		return result;
 	}
@@ -30,7 +30,7 @@ public class PrivateParticipationController {
 	public ParticipationRequestDto createRequest(@PathVariable Long userId,
 												 @RequestParam Long eventId) {
 		log.info("Request for participating by user: {}, event: {}", userId, eventId);
-		ParticipationRequestDto result = participationService.createRequest(userId, eventId);
+		ParticipationRequestDto result = participationService.createNew(userId, eventId);
 		log.info("Response for participating: {}", result);
 		return result;
 	}
@@ -40,7 +40,7 @@ public class PrivateParticipationController {
 	public ParticipationRequestDto cancelRequest(@PathVariable Long userId,
 												 @PathVariable Long requestId) {
 		log.info("Request for cancel participating by user: {}, request: {}", userId, requestId);
-		ParticipationRequestDto result = participationService.cancelRequest(userId, requestId);
+		ParticipationRequestDto result = participationService.cancel(userId, requestId);
 		log.info("Response for cancel participating: {}", result);
 		return result;
 	}

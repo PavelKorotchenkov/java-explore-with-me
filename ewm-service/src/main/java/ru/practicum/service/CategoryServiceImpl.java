@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public CategoryDto addNewCategory(NewCategoryDto newCategoryDto) {
+	public CategoryDto addNew(NewCategoryDto newCategoryDto) {
 		Optional<Category> existingCategory = categoryRepository.findByName(newCategoryDto.getName());
 		if (existingCategory.isPresent()) {
 			throw new CategoryUniqueNameViolationException("Attempt to create category with name='" + newCategoryDto.getName() + "' failed");
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public void deleteCategory(long catId) {
+	public void delete(long catId) {
 		Category category = categoryRepository.findById(catId)
 				.orElseThrow(() -> new EntityNotFoundException("Category with id='" + catId + "' not found"));
 		Optional<Event> optEvent = eventRepository.findFirstByCategoryId(catId);
@@ -50,14 +50,15 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public CategoryDto updateCategory(NewCategoryDto newCategoryDto, long catId) {
+	public CategoryDto update(NewCategoryDto newCategoryDto, long catId) {
 		Category category = categoryRepository.findById(catId)
 				.orElseThrow(() -> new EntityNotFoundException("Category with id='" + catId + "' not found"));
 
-		Optional<Category> existingCategoryWithTheSameName = categoryRepository.findByName(newCategoryDto.getName());
-		if (existingCategoryWithTheSameName.isPresent() && existingCategoryWithTheSameName.get().getId() != catId) {
-			throw new CategoryUniqueNameViolationException("Failed to change category name to '" + newCategoryDto.getName() + "'");
-		}
+		categoryRepository.findByName(newCategoryDto.getName())
+				.filter(existingCategory -> existingCategory.getId() != catId)
+				.ifPresent(existingCategory -> {
+					throw new CategoryUniqueNameViolationException("Failed to change category name to '" + newCategoryDto.getName() + "'");
+				});
 
 		category.setName(newCategoryDto.getName());
 		Category saved = categoryRepository.save(category);
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<CategoryDto> getCategories(Pageable pageable) {
+	public List<CategoryDto> getAll(Pageable pageable) {
 		return categoryRepository
 				.findAll(pageable)
 				.map(categoryDtoMapper::categoryToCategoryDto)
@@ -76,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public CategoryDto getCategoryById(long catId) {
+	public CategoryDto getById(long catId) {
 		Category category = categoryRepository.findById(catId)
 				.orElseThrow(() -> new EntityNotFoundException("Category with id='" + catId + "' not found"));
 

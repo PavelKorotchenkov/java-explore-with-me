@@ -9,10 +9,9 @@ import ru.practicum.model.ApiError;
 import ru.practicum.util.LocalDateTimeStringParser;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -76,7 +75,7 @@ public class ErrorHandler {
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ApiError handleException(final ParticipationRequestUpdateNotPendingException e) {
 		log.warn("Exception: {}", e.getMessage());
-		String reason = "Only pending participation requests update allowed";
+		String reason = "Only pending participation requests updateByAdmin allowed";
 		HttpStatus status = HttpStatus.CONFLICT;
 		return createApiError(e, reason, status);
 	}
@@ -128,17 +127,15 @@ public class ErrorHandler {
 
 	private ApiError createApiError(Exception e, String reason, HttpStatus status) {
 		ApiError error = new ApiError();
-		List<String> stackTraceList = Arrays.stream(e.getStackTrace())
-				.map(StackTraceElement::toString)
-				.collect(Collectors.toList());
-		String message = e.getMessage();
 
-		error.setErrors(stackTraceList);
-		error.setMessage(message);
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		error.setErrors(sw.toString());
+		error.setMessage(e.getMessage());
 		error.setReason(reason);
 		error.setStatus(status.toString());
-		String timestamp = LocalDateTimeStringParser.parseLocalDateTimeToString(LocalDateTime.now());
-		error.setTimestamp(timestamp);
+		error.setTimestamp(LocalDateTimeStringParser.parseLocalDateTimeToString(LocalDateTime.now()));
+
 		return error;
 	}
 }

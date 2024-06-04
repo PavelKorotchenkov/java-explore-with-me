@@ -23,7 +23,7 @@ public class AdminCompilationController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public CompilationDto postNewCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
 		log.info("Request for posting a new compilation: {}", newCompilationDto);
-		CompilationDto response = adminCompilationService.postNewCompilation(newCompilationDto);
+		CompilationDto response = adminCompilationService.postNew(newCompilationDto);
 		log.info("Response for posting a new compilation: {}", response);
 		return response;
 	}
@@ -32,7 +32,7 @@ public class AdminCompilationController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteCompilation(@PathVariable Long compId) {
 		log.info("Request for deleting compilation with id: {}", compId);
-		adminCompilationService.deleteCompilation(compId);
+		adminCompilationService.delete(compId);
 	}
 
 	@PatchMapping("/{compId}")
@@ -40,7 +40,7 @@ public class AdminCompilationController {
 	public CompilationDto updateCompilation(@PathVariable Long compId,
 											@RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
 		log.info("Request for updating compilation with id: {}, updated compilation: {}", compId, updateCompilationRequest);
-		CompilationDto response = adminCompilationService.updateCompilation(compId, updateCompilationRequest);
+		CompilationDto response = adminCompilationService.update(compId, updateCompilationRequest);
 		log.info("Response for updating compilation: {}", response);
 		return response;
 	}

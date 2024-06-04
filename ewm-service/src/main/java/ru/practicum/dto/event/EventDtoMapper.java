@@ -23,7 +23,6 @@ public interface EventDtoMapper {
 	Event newEventDtoToEvent(NewEventDto newEventDto);
 
 	@Mapping(target = "category", source = "event.category")
-	@Mapping(target = "confirmedRequests", source = "event.confirmedRequests")
 	@Mapping(target = "createdOn", source = "event.createdOn", qualifiedByName = "localDateTimeToString")
 	@Mapping(target = "description", source = "event.description")
 	@Mapping(target = "eventDate", source = "event.eventDate", qualifiedByName = "localDateTimeToString")
@@ -39,7 +38,6 @@ public interface EventDtoMapper {
 	EventFullDto eventToEventFullDto(Event event);
 
 	@Mapping(target = "category", source = "event.category")
-	@Mapping(target = "confirmedRequests", source = "event.confirmedRequests")
 	@Mapping(target = "description", source = "event.description")
 	@Mapping(target = "eventDate", source = "event.eventDate", qualifiedByName = "localDateTimeToString")
 	@Mapping(target = "id", source = "event.id")

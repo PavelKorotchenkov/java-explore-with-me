@@ -22,7 +22,7 @@ public class AdminCategoryController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
 		log.info("Add a new category request: {}", newCategoryDto);
-		CategoryDto categoryDto = categoryService.addNewCategory(newCategoryDto);
+		CategoryDto categoryDto = categoryService.addNew(newCategoryDto);
 		log.info("Add a new category response: {}", categoryDto);
 		return categoryDto;
 	}
@@ -31,7 +31,7 @@ public class AdminCategoryController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteCategory(@PathVariable Long catId) {
 		log.info("Request delete the category with id: {} ", catId);
-		categoryService.deleteCategory(catId);
+		categoryService.delete(catId);
 	}
 
 	@PatchMapping("/{catId}")
@@ -39,7 +39,7 @@ public class AdminCategoryController {
 	public CategoryDto updateCategory(@RequestBody @Valid NewCategoryDto newCategoryDto,
 									  @PathVariable Long catId) {
 		log.info("Update category request: {}", newCategoryDto);
-		CategoryDto categoryDto = categoryService.updateCategory(newCategoryDto, catId);
+		CategoryDto categoryDto = categoryService.update(newCategoryDto, catId);
 		log.info("Update category response: {}", categoryDto);
 		return categoryDto;
 	}

@@ -1,11 +1,3 @@
-drop table if exists categories cascade;
-drop table if exists events cascade;
-drop table if exists participation_requests cascade;
-drop table if exists locations cascade;
-drop table if exists users cascade;
-drop table if exists compilations cascade;
-drop table if exists compilation_events cascade;
-
 create TABLE IF NOT EXISTS categories(
     category_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
     category_name varchar(50) UNIQUE NOT NULL
@@ -27,7 +19,6 @@ create TABLE IF NOT EXISTS events(
     event_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
     event_annotation varchar(2000),
     category_id BIGINT,
-    event_confirmed_requests BIGINT,
     event_created_on timestamp WITHOUT TIME ZONE,
     event_description varchar(7000),
     event_date timestamp WITHOUT TIME ZONE,

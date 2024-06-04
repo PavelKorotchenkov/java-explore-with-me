@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.JPAExpressions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static ru.practicum.model.QParticipationRequest.participationRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -406,7 +409,12 @@ public class EventServiceImpl implements EventService {
 		boolean onlyAvailable = params.isOnlyAvailable();
 
 		if (onlyAvailable) {
-			builder.and(event.confirmedRequests.lt(event.participantLimit));
+			builder.and(event.participantLimit.gt(
+					JPAExpressions
+							.selectFrom(participationRequest)
+							.where(participationRequest.event.id.eq(event.id))
+							.groupBy(participationRequest.event.id)
+							.select(participationRequest.count())));
 		}
 
 		return builder;

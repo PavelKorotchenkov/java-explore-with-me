@@ -46,7 +46,7 @@ public class PublicEventController {
 						"rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}", text, categories, paid, rangeStart,
 				rangeEnd, onlyAvailable, sort, from, size);
 		PublicGetEventParamsDto params = createParams(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort);
-		Pageable page = OffsetPageRequest.createPageRequest(from, size, Sort.by(Sort.Direction.DESC,"EventDate"));
+		Pageable page = OffsetPageRequest.createPageRequest(from, size, Sort.by(Sort.Direction.DESC, "EventDate"));
 		List<EventShortDto> result = eventService.getAllPublic(params, page);
 		log.info("Response for the list of public events: found {} events", result.size());
 		log.info("Saving stats for /events");

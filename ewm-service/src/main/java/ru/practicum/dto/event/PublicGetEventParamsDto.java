@@ -2,8 +2,6 @@ package ru.practicum.dto.event;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.domain.Pageable;
-import ru.practicum.enums.EventSort;
 
 import java.util.List;
 

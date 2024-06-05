@@ -58,11 +58,11 @@ public class EventServiceImpl implements EventService {
 	public List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params, Pageable page) {
 		Predicate predicate = buildPredicate(params);
 
-		Page<Event> events = eventRepository.findAll(predicate, page);
-		Map<Long, Event> eventMap = createEventMap(events.getContent());
+		List<Event> events = eventRepository.findAll(predicate, page).toList();
+		Map<Long, Event> eventMap = createEventMap(events);
 		Map<Long, Long> confirmedRequestsCountMap = getConfirmedRequestsCount(eventMap.keySet());
 
-		List<EventFullDto> eventFullDtos = events.getContent().stream().map(eventDtoMapper::eventToEventFullDto)
+		List<EventFullDto> eventFullDtos = events.stream().map(eventDtoMapper::eventToEventFullDto)
 				.collect(Collectors.toList());
 
 		updateEventConfirmedRequestsFullDto(confirmedRequestsCountMap, eventFullDtos);
@@ -81,7 +81,7 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<EventShortDto> getAllByInitiator(long initiatorId, Pageable pageable) {
-		return eventRepository.findEventsByInitiatorId(initiatorId, pageable)
+		return eventRepository.findByInitiatorId(initiatorId, pageable)
 				.map(eventDtoMapper::eventToEventShortDto)
 				.getContent();
 	}

@@ -17,9 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
 
 	Set<Event> findByIdIn(Set<Long> ids);
 
-	@Query("SELECT e FROM Event e " +
-			"WHERE e.initiator.id = :initiatorId")
-	Page<Event> findEventsByInitiatorId(@Param("initiatorId") long initiatorId, Pageable pageable);
+	Page<Event> findByInitiatorId(long initiatorId, Pageable pageable);
 
 	@Query("SELECT e FROM Event e WHERE e.category.id = :categoryId")
 	Optional<Event> findFirstByCategoryId(@Param("categoryId") long categoryId);

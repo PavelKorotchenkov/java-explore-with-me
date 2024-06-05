@@ -6,6 +6,7 @@ import com.querydsl.jpa.JPAExpressions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.Client;
@@ -27,6 +28,7 @@ import ru.practicum.exception.ParticipationRequestUpdateNotPendingException;
 import ru.practicum.model.*;
 import ru.practicum.repository.*;
 import ru.practicum.util.LocalDateTimeStringParser;
+import ru.practicum.util.OffsetPageRequest;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -55,8 +57,9 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	@Override
 
-	public List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params, Pageable page) {
+	public List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params) {
 		Predicate predicate = buildPredicate(params);
+		Pageable page = OffsetPageRequest.createPageRequest(params.getFrom(), params.getSize());
 
 		List<Event> events = eventRepository.findAll(predicate, page).toList();
 		Map<Long, Event> eventMap = createEventMap(events);
@@ -216,8 +219,10 @@ public class EventServiceImpl implements EventService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<EventShortDto> getAllPublic(PublicGetEventParamsDto params, Pageable page) {
+	public List<EventShortDto> getAllPublic(PublicGetEventParamsDto params) {
 		Predicate predicate = buildPredicate(params);
+		Pageable page = OffsetPageRequest.createPageRequest(params.getFrom(), params.getSize(), Sort.by(Sort.Direction.DESC, "EventDate"));
+
 		EventSort sortType = getValidatedSort(params.getSort());
 
 		List<EventShortDto> eventShortDtos = new ArrayList<>();

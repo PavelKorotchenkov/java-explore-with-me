@@ -2,8 +2,6 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,6 @@ import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.PublicGetEventParamsDto;
 import ru.practicum.service.EventService;
-import ru.practicum.util.OffsetPageRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -45,12 +42,12 @@ public class PublicEventController {
 		log.info("Request for the list of public events with params: text: {}, categories: {}, paid: {}, rangeStart: {}, " +
 						"rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}", text, categories, paid, rangeStart,
 				rangeEnd, onlyAvailable, sort, from, size);
-		PublicGetEventParamsDto params = createParams(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort);
-		Pageable page = OffsetPageRequest.createPageRequest(from, size, Sort.by(Sort.Direction.DESC, "EventDate"));
-		List<EventShortDto> result = eventService.getAllPublic(params, page);
+		PublicGetEventParamsDto params = createParams(text, categories, paid, rangeStart, rangeEnd,
+				onlyAvailable, sort, from, size);
+		List<EventShortDto> result = eventService.getAllPublic(params);
 		log.info("Response for the list of public events: found {} events", result.size());
-		log.info("Saving stats for /events");
 		saveStats(request);
+		log.info("Saving stats for /events");
 		return result;
 	}
 
@@ -68,7 +65,8 @@ public class PublicEventController {
 		return response;
 	}
 
-	private PublicGetEventParamsDto createParams(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, boolean onlyAvailable, String sort) {
+	private PublicGetEventParamsDto createParams(String text, List<Long> categories, Boolean paid, String rangeStart,
+												 String rangeEnd, boolean onlyAvailable, String sort, int from, int size) {
 		return PublicGetEventParamsDto.builder()
 				.text(text)
 				.categories(categories)
@@ -77,6 +75,8 @@ public class PublicEventController {
 				.rangeEnd(rangeEnd)
 				.onlyAvailable(onlyAvailable)
 				.sort(sort)
+				.from(from)
+				.size(size)
 				.build();
 	}
 

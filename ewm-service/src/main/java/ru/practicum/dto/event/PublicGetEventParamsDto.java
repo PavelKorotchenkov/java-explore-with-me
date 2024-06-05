@@ -15,4 +15,6 @@ public class PublicGetEventParamsDto {
 	private final String rangeEnd;
 	private final boolean onlyAvailable;
 	private final String sort;
+	private final int from;
+	private final int size;
 }

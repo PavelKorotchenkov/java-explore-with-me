@@ -13,4 +13,6 @@ public class AdminGetEventParamsDto {
 	private final List<Long> categories;
 	private final String rangeStart;
 	private final String rangeEnd;
+	private final int from;
+	private final int size;
 }

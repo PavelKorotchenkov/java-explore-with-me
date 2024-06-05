@@ -9,7 +9,7 @@ import ru.practicum.dto.participation.ParticipationRequestDto;
 import java.util.List;
 
 public interface EventService {
-	List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params, Pageable page);
+	List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params);
 
 	EventFullDto updateByAdmin(long eventId, UpdateEventAdminRequest updateRequest);
 
@@ -25,7 +25,7 @@ public interface EventService {
 
 	EventRequestStatusUpdateResult updateRequestStatus(long userId, long eventId, EventRequestStatusUpdateRequest request);
 
-	List<EventShortDto> getAllPublic(PublicGetEventParamsDto paramsDto, Pageable page);
+	List<EventShortDto> getAllPublic(PublicGetEventParamsDto paramsDto);
 
 	EventFullDto getByIdPublic(long id);
 }

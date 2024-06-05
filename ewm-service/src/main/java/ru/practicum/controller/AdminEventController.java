@@ -2,14 +2,12 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.AdminGetEventParamsDto;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.service.EventService;
-import ru.practicum.util.OffsetPageRequest;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,9 +31,8 @@ public class AdminEventController {
 										@RequestParam(defaultValue = "10") int size) {
 		log.info("Admin request for all the events: users: {}, states: {}, categories: {}, rangeStart: {}, " +
 				"rangeEnd: {}, from: {}, size: {}", users, states, categories, rangeStart, rangeEnd, from, size);
-		AdminGetEventParamsDto params = createParams(users, states, categories, rangeStart, rangeEnd);
-		Pageable page = OffsetPageRequest.createPageRequest(from, size);
-		List<EventFullDto> result = eventService.getAllByAdmin(params, page);
+		AdminGetEventParamsDto params = createParams(users, states, categories, rangeStart, rangeEnd, from, size);
+		List<EventFullDto> result = eventService.getAllByAdmin(params);
 		log.info("Admin response for all the events: {}", result);
 		return result;
 	}
@@ -50,13 +47,16 @@ public class AdminEventController {
 		return result;
 	}
 
-	private AdminGetEventParamsDto createParams(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd) {
+	private AdminGetEventParamsDto createParams(List<Long> users, List<String> states, List<Long> categories,
+												String rangeStart, String rangeEnd, int from, int size) {
 		return AdminGetEventParamsDto.builder()
 				.users(users)
 				.states(states)
 				.categories(categories)
 				.rangeStart(rangeStart)
 				.rangeEnd(rangeEnd)
+				.from(from)
+				.size(size)
 				.build();
 	}
 }

@@ -41,10 +41,10 @@ public class StatsClient extends BaseClient implements Client {
 				"unique", requestDto.isUnique()
 		);
 
-		if (parameters.get("uris") != null) {
-			return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
-		} else {
-			return get("/stats?start={start}&end={end}&unique={unique}", parameters);
-		}
+		String url = parameters.get("uris") != null ?
+				"/stats?start={start}&end={end}&uris={uris}&unique={unique}" :
+				"/stats?start={start}&end={end}&unique={unique}";
+
+		return get(url, parameters);
 	}
 }

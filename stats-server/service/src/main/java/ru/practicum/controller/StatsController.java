@@ -30,9 +30,9 @@ public class StatsController {
 	@GetMapping("/stats")
 	@ResponseStatus(HttpStatus.OK)
 	public List<StatsResponseDto> getStats(@RequestParam String start,
-										   @RequestParam String end,
-										   @RequestParam(required = false) List<String> uris,
-										   @RequestParam(defaultValue = "false") Boolean unique) {
+	                                       @RequestParam String end,
+	                                       @RequestParam(required = false) List<String> uris,
+	                                       @RequestParam(defaultValue = "false") Boolean unique) {
 		log.info("Getting statistics: from {} to {}, for uris {}, unique = {}", start, end, uris, unique);
 		LocalDateTime startLocalDateTime = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		LocalDateTime endLocalDateTime = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

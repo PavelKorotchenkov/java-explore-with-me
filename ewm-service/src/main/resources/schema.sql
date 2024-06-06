@@ -5,7 +5,7 @@ create TABLE IF NOT EXISTS categories(
 
 create TABLE IF NOT EXISTS users(
     user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
-    user_email varchar(254),
+    user_email varchar(254) UNIQUE NOT NULL,
     user_name varchar(250)
 );
 

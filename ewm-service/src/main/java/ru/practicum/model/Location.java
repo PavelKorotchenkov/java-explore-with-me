@@ -14,10 +14,10 @@ import javax.persistence.*;
 @Table(name = "locations")
 public class Location {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "location_id")
-	private Long id;
-	private float lat;
-	private float lon;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "location_id")
+    private Long id;
+    private float lat;
+    private float lon;
 }

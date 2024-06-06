@@ -7,7 +7,7 @@ import ru.practicum.model.Category;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CategoryDtoMapper {
 
-	Category newCategoryDtoToCategory(NewCategoryDto newCategoryDto);
+    Category newCategoryDtoToCategory(NewCategoryDto newCategoryDto);
 
-	CategoryDto categoryToCategoryDto(Category category);
+    CategoryDto categoryToCategoryDto(Category category);
 }

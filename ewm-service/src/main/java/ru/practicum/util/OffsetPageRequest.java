@@ -3,17 +3,26 @@ package ru.practicum.util;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+
 public class OffsetPageRequest extends PageRequest {
-	protected OffsetPageRequest(int page, int size, Sort sort) {
-		super(page, size, sort);
-	}
 
-	public static PageRequest createPageRequest(Integer offset, Integer size) {
-		return PageRequest.of(offset, size);
-	}
+    private final int offset;
 
-	public static PageRequest createPageRequest(Integer offset, Integer size, Sort by) {
-		return PageRequest.of(offset, size, by);
-	}
+    protected OffsetPageRequest(int from, int size, Sort sort) {
+        super(from / size, size, sort);
+        this.offset = from;
+    }
 
+    public static PageRequest createPageRequest(Integer from, Integer size) {
+        return new OffsetPageRequest(from, size, Sort.unsorted());
+    }
+
+    public static PageRequest createPageRequest(Integer from, Integer size, Sort sort) {
+        return new OffsetPageRequest(from, size, sort);
+    }
+
+    @Override
+    public long getOffset() {
+        return this.offset;
+    }
 }

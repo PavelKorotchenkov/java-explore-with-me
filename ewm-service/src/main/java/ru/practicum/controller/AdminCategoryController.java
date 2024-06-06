@@ -16,31 +16,31 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminCategoryController {
 
-	private final CategoryService categoryService;
+    private final CategoryService categoryService;
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
-		log.info("Add a new category request: {}", newCategoryDto);
-		CategoryDto categoryDto = categoryService.addNew(newCategoryDto);
-		log.info("Add a new category response: {}", categoryDto);
-		return categoryDto;
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
+        log.info("Add a new category request: {}", newCategoryDto);
+        CategoryDto categoryDto = categoryService.create(newCategoryDto);
+        log.info("Add a new category response: {}", categoryDto);
+        return categoryDto;
+    }
 
-	@DeleteMapping("/{catId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteCategory(@PathVariable Long catId) {
-		log.info("Request delete the category with id: {} ", catId);
-		categoryService.delete(catId);
-	}
+    @DeleteMapping("/{catId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long catId) {
+        log.info("Request delete the category with id: {} ", catId);
+        categoryService.delete(catId);
+    }
 
-	@PatchMapping("/{catId}")
-	@ResponseStatus(HttpStatus.OK)
-	public CategoryDto updateCategory(@RequestBody @Valid NewCategoryDto newCategoryDto,
-									  @PathVariable Long catId) {
-		log.info("Update category request: {}", newCategoryDto);
-		CategoryDto categoryDto = categoryService.update(newCategoryDto, catId);
-		log.info("Update category response: {}", categoryDto);
-		return categoryDto;
-	}
+    @PatchMapping("/{catId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto updateCategory(@RequestBody @Valid NewCategoryDto newCategoryDto,
+                                      @PathVariable Long catId) {
+        log.info("Update category request: {}", newCategoryDto);
+        CategoryDto categoryDto = categoryService.update(newCategoryDto, catId);
+        log.info("Update category response: {}", categoryDto);
+        return categoryDto;
+    }
 }

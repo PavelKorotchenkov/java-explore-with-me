@@ -15,11 +15,11 @@ import java.util.Set;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPredicateExecutor<Event> {
 
-	Set<Event> findByIdIn(Set<Long> ids);
+    Set<Event> findByIdIn(Set<Long> ids);
 
-	Page<Event> findByInitiatorId(long initiatorId, Pageable pageable);
+    Page<Event> findByInitiatorId(long initiatorId, Pageable pageable);
 
-	@Query("SELECT e FROM Event e WHERE e.category.id = :categoryId")
-	Optional<Event> findFirstByCategoryId(@Param("categoryId") long categoryId);
+    @Query("SELECT e FROM Event e WHERE e.category.id = :categoryId")
+    Optional<Event> findFirstByCategoryId(@Param("categoryId") long categoryId);
 }
 

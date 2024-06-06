@@ -13,16 +13,16 @@ import java.util.Set;
 
 @Repository
 public interface ParticipationRequestRepository extends JpaRepository<ParticipationRequest, Long> {
-	List<ParticipationRequest> findByRequesterId(long requesterId);
+    List<ParticipationRequest> findByRequesterId(long requesterId);
 
-	List<ParticipationRequest> findByEventIdAndRequesterIdNot(long eventId, long userId);
+    List<ParticipationRequest> findByEventIdAndRequesterIdNot(long eventId, long userId);
 
-	Optional<ParticipationRequest> findByEventIdAndRequesterId(long eventId, long userId);
+    Optional<ParticipationRequest> findByEventIdAndRequesterId(long eventId, long userId);
 
-	@Query("SELECT pr.event.id, COUNT(pr) FROM ParticipationRequest pr " +
-			"WHERE pr.event.id IN :eventIds " +
-			"AND pr.status = :status GROUP BY pr.event.id")
-	List<Object[]> countParticipantsInAndStatus(@Param("eventIds") Set<Long> eventIds, @Param("status") ParticipationRequestStatus status);
+    @Query("SELECT pr.event.id, COUNT(pr) FROM ParticipationRequest pr " +
+            "WHERE pr.event.id IN :eventIds " +
+            "AND pr.status = :status GROUP BY pr.event.id")
+    List<Object[]> countParticipantsInAndStatus(@Param("eventIds") Set<Long> eventIds, @Param("status") ParticipationRequestStatus status);
 
-	Long countByEventIdAndStatus(long eventId, ParticipationRequestStatus status);
+    Long countByEventIdAndStatus(long eventId, ParticipationRequestStatus status);
 }

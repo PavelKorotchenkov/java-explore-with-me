@@ -9,23 +9,23 @@ import ru.practicum.dto.participation.ParticipationRequestDto;
 import java.util.List;
 
 public interface EventService {
-	List<EventFullDto> getAllByAdmin(AdminGetEventParamsDto params);
+    List<EventFullDto> getAll(AdminGetEventParamsDto params);
 
-	EventFullDto updateByAdmin(long eventId, UpdateEventAdminRequest updateRequest);
+    EventFullDto updateByAdmin(long eventId, UpdateEventAdminRequest updateRequest);
 
-	List<EventShortDto> getAllByInitiator(long userId, Pageable pageable);
+    List<EventShortDto> getAllByInitiator(long userId, Pageable pageable);
 
-	EventFullDto postNewByInitiator(long userId, NewEventDto newEventDto);
+    EventFullDto create(long userId, NewEventDto newEventDto);
 
-	EventFullDto getOneByInitiator(long userId, long eventId);
+    EventFullDto getOneByInitiator(long userId, long eventId);
 
-	EventFullDto updateByInitiator(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest);
+    EventFullDto updateByInitiator(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest);
 
-	List<ParticipationRequestDto> getRequests(long userId, long eventId);
+    List<ParticipationRequestDto> getRequests(long userId, long eventId);
 
-	EventRequestStatusUpdateResult updateRequestStatus(long userId, long eventId, EventRequestStatusUpdateRequest request);
+    EventRequestStatusUpdateResult updateRequestStatus(long userId, long eventId, EventRequestStatusUpdateRequest request);
 
-	List<EventShortDto> getAllPublic(PublicGetEventParamsDto paramsDto);
+    List<EventShortDto> getAll(PublicGetEventParamsDto params);
 
-	EventFullDto getByIdPublic(long id);
+    EventFullDto getByIdPublic(long id);
 }

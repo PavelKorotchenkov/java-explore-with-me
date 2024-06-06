@@ -9,5 +9,5 @@ import ru.practicum.model.Compilation;
 @Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
-	Page<Compilation> findByPinned(boolean pinned, Pageable pageable);
+    Page<Compilation> findByPinned(boolean pinned, Pageable pageable);
 }

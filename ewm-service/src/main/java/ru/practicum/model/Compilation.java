@@ -16,22 +16,22 @@ import java.util.Set;
 @Entity
 @Table(name = "compilations")
 public class Compilation {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "compilation_id")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "compilation_id")
+    private Long id;
 
-	@ManyToMany
-	@JoinTable(
-			name = "compilation_events",
-			joinColumns = @JoinColumn(name = "compilation_id"),
-			inverseJoinColumns = @JoinColumn(name = "event_id")
-	)
-	private Set<Event> events = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private Set<Event> events = new HashSet<>();
 
-	@Column(name = "pinned")
-	private Boolean pinned;
+    @Column(name = "pinned")
+    private Boolean pinned;
 
-	@Column(name = "title")
-	private String title;
+    @Column(name = "title")
+    private String title;
 }

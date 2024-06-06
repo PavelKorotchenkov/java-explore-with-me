@@ -7,8 +7,8 @@ import java.util.Set;
 
 @Data
 public class CompilationDto {
-	private Set<EventShortDto> events;
-	private long id;
-	private boolean pinned;
-	private String title;
+    private Set<EventShortDto> events;
+    private long id;
+    private boolean pinned;
+    private String title;
 }

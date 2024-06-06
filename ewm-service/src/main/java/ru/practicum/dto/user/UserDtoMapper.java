@@ -7,7 +7,7 @@ import ru.practicum.model.User;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserDtoMapper {
 
-	User newUserRequestToUser(NewUserRequest newUserRequest);
+    User newUserRequestToUser(NewUserRequest newUserRequest);
 
-	UserDto userToUserDto(User user);
+    UserDto userToUserDto(User user);
 }

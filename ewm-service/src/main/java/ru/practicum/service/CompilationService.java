@@ -8,13 +8,13 @@ import ru.practicum.dto.compilation.UpdateCompilationRequest;
 import java.util.List;
 
 public interface CompilationService {
-	CompilationDto postNew(NewCompilationDto compilationDto);
+    CompilationDto create(NewCompilationDto compilationDto);
 
-	void delete(long compId);
+    void delete(long compId);
 
-	CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest);
+    CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest);
 
-	List<CompilationDto> getAll(Boolean pinned, Pageable pageable);
+    List<CompilationDto> getAll(Boolean pinned, Pageable pageable);
 
-	CompilationDto getById(long compId);
+    CompilationDto getById(long compId);
 }

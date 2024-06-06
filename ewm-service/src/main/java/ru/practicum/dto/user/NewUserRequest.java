@@ -9,14 +9,14 @@ import javax.validation.constraints.Size;
 
 @Data
 public class NewUserRequest {
-	@Email
-	@Size(min = 6, max = 254)
-	@NotBlank
-	@NotEmpty
-	private String email;
+    @Email
+    @Size(min = 6, max = 254)
+    @NotBlank
+    @NotEmpty
+    private String email;
 
-	@Size(min = 2, max = 250)
-	@NotBlank
-	@NotEmpty
-	private String name;
+    @Size(min = 2, max = 250)
+    @NotBlank
+    @NotEmpty
+    private String name;
 }

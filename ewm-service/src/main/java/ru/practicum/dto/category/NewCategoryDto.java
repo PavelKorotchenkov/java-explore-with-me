@@ -8,8 +8,8 @@ import javax.validation.constraints.Size;
 
 @Data
 public class NewCategoryDto {
-	@Size(min = 1, max = 50)
-	@NotBlank
-	@NotEmpty
-	private String name;
+    @Size(min = 1, max = 50)
+    @NotBlank
+    @NotEmpty
+    private String name;
 }

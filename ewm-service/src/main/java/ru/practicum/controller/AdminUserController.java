@@ -19,33 +19,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminUserController {
 
-	private final UserService userService;
+    private final UserService userService;
 
-	@GetMapping
-	@ResponseStatus(HttpStatus.OK)
-	public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
-	                              @RequestParam(defaultValue = "0") int from,
-	                              @RequestParam(defaultValue = "10") int size) {
-		log.info("Get users request: ids: {}, from: {}, size; {}", ids, from, size);
-		Pageable page = OffsetPageRequest.createPageRequest(from, size);
-		List<UserDto> users = userService.getAll(ids, page);
-		log.info("Get users response: found {} users: {}", users.size(), users);
-		return users;
-	}
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                  @RequestParam(defaultValue = "0") int from,
+                                  @RequestParam(defaultValue = "10") int size) {
+        log.info("Get users request: ids: {}, from: {}, size; {}", ids, from, size);
+        Pageable page = OffsetPageRequest.createPageRequest(from, size);
+        List<UserDto> users = userService.getAll(ids, page);
+        log.info("Get users response: found {} users: {}", users.size(), users);
+        return users;
+    }
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto createNewUser(@RequestBody @Valid NewUserRequest newUserRequest) {
-		log.info("New user create request: {}", newUserRequest);
-		UserDto savedUser = userService.createNew(newUserRequest);
-		log.info("New user created: {}", savedUser);
-		return savedUser;
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto createNewUser(@RequestBody @Valid NewUserRequest newUserRequest) {
+        log.info("New user create request: {}", newUserRequest);
+        UserDto savedUser = userService.create(newUserRequest);
+        log.info("New user created: {}", savedUser);
+        return savedUser;
+    }
 
-	@DeleteMapping("/{userId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteUser(@PathVariable Long userId) {
-		log.info("Delete user request, userId: {}", userId);
-		userService.delete(userId);
-	}
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long userId) {
+        log.info("Delete user request, userId: {}", userId);
+        userService.delete(userId);
+    }
 }

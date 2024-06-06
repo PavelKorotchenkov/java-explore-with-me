@@ -17,31 +17,31 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminCompilationController {
 
-	private final CompilationService adminCompilationService;
+    private final CompilationService adminCompilationService;
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public CompilationDto postNewCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
-		log.info("Request for posting a new compilation: {}", newCompilationDto);
-		CompilationDto response = adminCompilationService.postNew(newCompilationDto);
-		log.info("Response for posting a new compilation: {}", response);
-		return response;
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompilationDto postNewCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
+        log.info("Request for posting a new compilation: {}", newCompilationDto);
+        CompilationDto response = adminCompilationService.create(newCompilationDto);
+        log.info("Response for posting a new compilation: {}", response);
+        return response;
+    }
 
-	@DeleteMapping("/{compId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteCompilation(@PathVariable Long compId) {
-		log.info("Request for deleting compilation with id: {}", compId);
-		adminCompilationService.delete(compId);
-	}
+    @DeleteMapping("/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCompilation(@PathVariable Long compId) {
+        log.info("Request for deleting compilation with id: {}", compId);
+        adminCompilationService.delete(compId);
+    }
 
-	@PatchMapping("/{compId}")
-	@ResponseStatus(HttpStatus.OK)
-	public CompilationDto updateCompilation(@PathVariable Long compId,
-											@RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
-		log.info("Request for updating compilation with id: {}, updated compilation: {}", compId, updateCompilationRequest);
-		CompilationDto response = adminCompilationService.update(compId, updateCompilationRequest);
-		log.info("Response for updating compilation: {}", response);
-		return response;
-	}
+    @PatchMapping("/{compId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CompilationDto updateCompilation(@PathVariable Long compId,
+                                            @RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
+        log.info("Request for updating compilation with id: {}, updated compilation: {}", compId, updateCompilationRequest);
+        CompilationDto response = adminCompilationService.update(compId, updateCompilationRequest);
+        log.info("Response for updating compilation: {}", response);
+        return response;
+    }
 }

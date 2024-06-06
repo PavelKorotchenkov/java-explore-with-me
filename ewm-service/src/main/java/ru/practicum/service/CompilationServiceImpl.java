@@ -22,63 +22,63 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CompilationServiceImpl implements CompilationService {
-	private final CompilationRepository compilationRepository;
-	private final EventRepository eventRepository;
-	private final CompilationDtoMapper compilationDtoMapper;
+    private final CompilationRepository compilationRepository;
+    private final EventRepository eventRepository;
+    private final CompilationDtoMapper compilationDtoMapper;
 
-	@Override
-	public CompilationDto postNew(NewCompilationDto compilationDto) {
-		Compilation compilationToSave = compilationDtoMapper.newCompilationDtoToCompilation(compilationDto);
-		return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilationToSave));
-	}
+    @Override
+    public CompilationDto create(NewCompilationDto compilationDto) {
+        Compilation compilationToSave = compilationDtoMapper.newCompilationDtoToCompilation(compilationDto);
+        return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilationToSave));
+    }
 
-	@Override
-	public void delete(long compId) {
-		compilationRepository.deleteById(compId);
-	}
+    @Override
+    public void delete(long compId) {
+        compilationRepository.deleteById(compId);
+    }
 
-	@Transactional
-	@Override
-	public CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest) {
-		Compilation compilation = compilationRepository.findById(compId)
-				.orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
+    @Transactional
+    @Override
+    public CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest) {
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
 
-		if (updateCompilationRequest.getEvents() != null) {
-			Set<Event> eventList = eventRepository.findByIdIn(updateCompilationRequest.getEvents());
-			compilation.setEvents(eventList);
-		}
+        if (updateCompilationRequest.getEvents() != null) {
+            Set<Event> eventList = eventRepository.findByIdIn(updateCompilationRequest.getEvents());
+            compilation.setEvents(eventList);
+        }
 
-		if (updateCompilationRequest.getPinned() != null) {
-			compilation.setPinned(updateCompilationRequest.getPinned());
-		}
+        if (updateCompilationRequest.getPinned() != null) {
+            compilation.setPinned(updateCompilationRequest.getPinned());
+        }
 
-		if (updateCompilationRequest.getTitle() != null) {
-			compilation.setTitle(updateCompilationRequest.getTitle());
-		}
+        if (updateCompilationRequest.getTitle() != null) {
+            compilation.setTitle(updateCompilationRequest.getTitle());
+        }
 
-		return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilation));
-	}
+        return compilationDtoMapper.compilationToCompilationDto(compilationRepository.save(compilation));
+    }
 
-	@Transactional(readOnly = true)
-	@Override
-	public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
-		Page<Compilation> compilationDtoPage;
-		if (pinned == null) {
-			compilationDtoPage = compilationRepository.findAll(pageable);
-		} else {
-			compilationDtoPage = compilationRepository.findByPinned(pinned, pageable);
-		}
+    @Transactional(readOnly = true)
+    @Override
+    public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
+        Page<Compilation> compilationDtoPage;
+        if (pinned == null) {
+            compilationDtoPage = compilationRepository.findAll(pageable);
+        } else {
+            compilationDtoPage = compilationRepository.findByPinned(pinned, pageable);
+        }
 
-		return compilationDtoPage.getContent().stream()
-				.map(compilationDtoMapper::compilationToCompilationDto)
-				.collect(Collectors.toList());
-	}
+        return compilationDtoPage.getContent().stream()
+                .map(compilationDtoMapper::compilationToCompilationDto)
+                .collect(Collectors.toList());
+    }
 
-	@Transactional(readOnly = true)
-	@Override
-	public CompilationDto getById(long compId) {
-		Compilation compilation = compilationRepository.findById(compId)
-				.orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
-		return compilationDtoMapper.compilationToCompilationDto(compilation);
-	}
+    @Transactional(readOnly = true)
+    @Override
+    public CompilationDto getById(long compId) {
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new EntityNotFoundException("Compilation with id='" + compId + "' not found"));
+        return compilationDtoMapper.compilationToCompilationDto(compilation);
+    }
 }

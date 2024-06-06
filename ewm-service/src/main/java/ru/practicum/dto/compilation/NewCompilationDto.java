@@ -9,10 +9,10 @@ import java.util.Set;
 
 @Data
 public class NewCompilationDto {
-	private Set<Long> events;
-	private boolean pinned = false;
-	@Size(min = 1, max = 50)
-	@NotBlank
-	@NotEmpty
-	private String title;
+    private Set<Long> events;
+    private boolean pinned = false;
+    @Size(min = 1, max = 50)
+    @NotBlank
+    @NotEmpty
+    private String title;
 }

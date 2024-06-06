@@ -13,14 +13,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long id;
 
-	@Column(name = "user_email")
-	private String email;
+    @Column(name = "user_email", unique = true, nullable = false)
+    private String email;
 
-	@Column(name = "user_name")
-	private String name;
+    @Column(name = "user_name")
+    private String name;
 }

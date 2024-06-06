@@ -14,8 +14,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Query("SELECT u FROM User u WHERE u.id IN :ids")
-	Page<User> findByIds(@Param("ids") List<Long> ids, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.id IN :ids")
+    Page<User> findByIds(@Param("ids") List<Long> ids, Pageable pageable);
 
-	Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 }

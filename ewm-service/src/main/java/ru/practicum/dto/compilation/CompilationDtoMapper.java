@@ -21,66 +21,66 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CompilationDtoMapper {
 
-	@Mapping(source = "events", target = "events", qualifiedByName = "eventIdsToEvents")
-	Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto);
+    @Mapping(source = "events", target = "events", qualifiedByName = "eventIdsToEvents")
+    Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto);
 
-	@Mapping(source = "events", target = "events", qualifiedByName = "eventsToEventShortDtos")
-	CompilationDto compilationToCompilationDto(Compilation compilation);
+    @Mapping(source = "events", target = "events", qualifiedByName = "eventsToEventShortDtos")
+    CompilationDto compilationToCompilationDto(Compilation compilation);
 
-	@Named("eventIdsToEvents")
-	static Set<Event> eventIdsToEvents(Set<Long> eventIds) {
-		if (eventIds == null) {
-			return null;
-		}
-		return eventIds.stream().map(id -> {
-			Event event = new Event();
-			event.setId(id);
-			return event;
-		}).collect(Collectors.toSet());
-	}
+    @Named("eventIdsToEvents")
+    static Set<Event> eventIdsToEvents(Set<Long> eventIds) {
+        if (eventIds == null) {
+            return null;
+        }
+        return eventIds.stream().map(id -> {
+            Event event = new Event();
+            event.setId(id);
+            return event;
+        }).collect(Collectors.toSet());
+    }
 
-	@Named("eventsToEventShortDtos")
-	static Set<EventShortDto> eventsToEventShortDtos(Set<Event> events) {
-		if (events == null) {
-			return null;
-		}
-		return events.stream().map(CompilationDtoMapper.INSTANCE::eventToEventShortDto).collect(Collectors.toSet());
-	}
+    @Named("eventsToEventShortDtos")
+    static Set<EventShortDto> eventsToEventShortDtos(Set<Event> events) {
+        if (events == null) {
+            return null;
+        }
+        return events.stream().map(CompilationDtoMapper.INSTANCE::eventToEventShortDto).collect(Collectors.toSet());
+    }
 
-	@Mapping(target = "eventDate", source = "event.eventDate", qualifiedByName = "localDateTimeToString")
-	@Mapping(target = "category", source = "event.category", qualifiedByName = "categoryToCategoryDto")
-	@Mapping(target = "initiator", source = "event.initiator", qualifiedByName = "userToUserShortDto")
-	EventShortDto eventToEventShortDto(Event event);
+    @Mapping(target = "eventDate", source = "event.eventDate", qualifiedByName = "localDateTimeToString")
+    @Mapping(target = "category", source = "event.category", qualifiedByName = "categoryToCategoryDto")
+    @Mapping(target = "initiator", source = "event.initiator", qualifiedByName = "userToUserShortDto")
+    EventShortDto eventToEventShortDto(Event event);
 
-	@Named("categoryToCategoryDto")
-	static CategoryDto categoryToCategoryDto(Category category) {
-		if (category == null) {
-			return null;
-		}
-		CategoryDto dto = new CategoryDto();
-		dto.setId(category.getId());
-		dto.setName(category.getName());
-		return dto;
-	}
+    @Named("categoryToCategoryDto")
+    static CategoryDto categoryToCategoryDto(Category category) {
+        if (category == null) {
+            return null;
+        }
+        CategoryDto dto = new CategoryDto();
+        dto.setId(category.getId());
+        dto.setName(category.getName());
+        return dto;
+    }
 
-	@Named("userToUserShortDto")
-	static UserShortDto userToUserShortDto(User user) {
-		if (user == null) {
-			return null;
-		}
-		UserShortDto dto = new UserShortDto();
-		dto.setId(user.getId());
-		dto.setName(user.getName());
-		return dto;
-	}
+    @Named("userToUserShortDto")
+    static UserShortDto userToUserShortDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserShortDto dto = new UserShortDto();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        return dto;
+    }
 
-	@Named("localDateTimeToString")
-	static String localDateTimeToString(LocalDateTime localDateTime) {
-		if (localDateTime == null) {
-			return null;
-		}
-		return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	}
+    @Named("localDateTimeToString")
+    static String localDateTimeToString(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 
-	CompilationDtoMapper INSTANCE = Mappers.getMapper(CompilationDtoMapper.class);
+    CompilationDtoMapper INSTANCE = Mappers.getMapper(CompilationDtoMapper.class);
 }

@@ -2,15 +2,20 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.Client;
 import ru.practicum.dto.StatsRequestDto;
+import ru.practicum.dto.comment.CommentShort;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.PublicGetEventParamsDto;
+import ru.practicum.service.CommentService;
 import ru.practicum.service.EventService;
+import ru.practicum.util.OffsetPageRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -25,6 +30,7 @@ public class PublicEventController {
     public static final String APP = "ewm-main-service";
     private final Client client;
     private final EventService eventService;
+    private final CommentService commentService;
 
     @Transactional
     @GetMapping
@@ -62,6 +68,28 @@ public class PublicEventController {
 
         saveStats(request);
         log.info("Saving stats for /events/{} ", id);
+        return response;
+    }
+
+    @GetMapping("/{id}/comments")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CommentShort> getComments(@PathVariable Long id,
+                                          @RequestParam(defaultValue = "0") int from,
+                                          @RequestParam(defaultValue = "10") int size) {
+        log.info("Request for all comments to event: {}", id);
+        Pageable page = OffsetPageRequest.createPageRequest(from, size, Sort.by(Sort.Direction.DESC, "CreatedOn"));
+        List<CommentShort> response = commentService.getAll(id, page);
+        log.info("Request for all comments to event: {}", id);
+        return response;
+    }
+
+    @GetMapping("/{id}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommentShort getCommentById(@PathVariable Long id,
+                                       @PathVariable Long commentId) {
+        log.info("Request for comment with id: {} to event: {}", commentId, id);
+        CommentShort response = commentService.getCommentById(id, commentId);
+        log.info("Request for comment: {} to event: {}", commentId, id);
         return response;
     }
 

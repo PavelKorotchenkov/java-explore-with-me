@@ -47,6 +47,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final ParticipationRequestRepository participationRequestRepository;
     private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
 
     private final ParticipationRequestMapper participationRequestMapper;
     private final LocationDtoMapper locationDtoMapper;
@@ -56,7 +57,6 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     @Override
-
     public List<EventFullDto> getAll(AdminGetEventParamsDto params) {
         Predicate predicate = buildPredicate(params);
         Pageable page = OffsetPageRequest.createPageRequest(params.getFrom(), params.getSize());
@@ -68,7 +68,7 @@ public class EventServiceImpl implements EventService {
         List<EventFullDto> eventFullDtos = events.stream().map(eventDtoMapper::eventToEventFullDto)
                 .collect(Collectors.toList());
 
-        updateEventConfirmedRequestsFullDto(confirmedRequestsCountMap, eventFullDtos);
+        updateEventConfirmedRequestsFullDtos(confirmedRequestsCountMap, eventFullDtos);
         return eventFullDtos;
     }
 
@@ -84,9 +84,13 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> getAllByInitiator(long initiatorId, Pageable pageable) {
-        return eventRepository.findByInitiatorId(initiatorId, pageable)
+        List<EventShortDto> events = eventRepository.findByInitiatorId(initiatorId, pageable)
                 .map(eventDtoMapper::eventToEventShortDto)
                 .getContent();
+        Map<Long, EventShortDto> eventMap = createEventShortDtoMap(events);
+        Map<Long, Long> commentCountMap = getCommentCount(eventMap.keySet());
+        updateEventCommentsShortDtos(commentCountMap, events);
+        return events;
     }
 
     @Transactional
@@ -141,7 +145,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<ParticipationRequestDto> getRequests(long userId, long eventId) {
         List<ParticipationRequest> requests = participationRequestRepository.findByEventIdAndRequesterIdNot(eventId, userId);
-
         return requests.stream().map(participationRequestMapper::toDto).collect(Collectors.toList());
     }
 
@@ -227,11 +230,14 @@ public class EventServiceImpl implements EventService {
 
         List<EventShortDto> eventShortDtos = new ArrayList<>();
         if (sortType == null || sortType == EventSort.EVENT_DATE) {
-            eventShortDtos = getEventsSortedByDate(predicate, page);
+            eventShortDtos = getEventsSortedByDate(predicate, page, params.getRangeStart());
         } else if (sortType == EventSort.VIEWS) {
             eventShortDtos = getEventsSortedByViews(predicate, params);
         }
 
+        Map<Long, EventShortDto> eventMap = createEventShortDtoMap(eventShortDtos);
+        Map<Long, Long> commentCountMap = getCommentCount(eventMap.keySet());
+        updateEventCommentsShortDtos(commentCountMap, eventShortDtos);
         return eventShortDtos;
     }
 
@@ -275,9 +281,9 @@ public class EventServiceImpl implements EventService {
         return eventShortDtos;
     }
 
-    private List<EventShortDto> getEventsSortedByDate(Predicate predicate, Pageable page) {
+    private List<EventShortDto> getEventsSortedByDate(Predicate predicate, Pageable page, String rangeStart) {
         Page<Event> resultEvents = eventRepository.findAll(predicate, page);
-        LocalDateTime startDate = getStartDate(null);
+        LocalDateTime startDate = getStartDate(rangeStart);
 
         Map<Long, Event> eventMap = createEventMap(resultEvents.getContent());
         Map<Long, Long> confirmedRequestsCountMap = getConfirmedRequestsCount(eventMap.keySet());
@@ -308,6 +314,9 @@ public class EventServiceImpl implements EventService {
         return resultEvents.stream().collect(Collectors.toMap(Event::getId, Function.identity()));
     }
 
+    private Map<Long, EventShortDto> createEventShortDtoMap(List<EventShortDto> resultEvents) {
+        return resultEvents.stream().collect(Collectors.toMap(EventShortDto::getId, Function.identity()));
+    }
 
     private Map<Long, Long> getConfirmedRequestsCount(Set<Long> eventIds) {
         List<Object[]> results = participationRequestRepository.countParticipantsInAndStatus(eventIds, ParticipationRequestStatus.CONFIRMED);
@@ -315,6 +324,15 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toMap(
                         result -> (Long) result[0], //eventId
                         result -> (Long) result[1]  //confirmed requests count
+                ));
+    }
+
+    private Map<Long, Long> getCommentCount(Set<Long> eventIds) {
+        List<Object[]> results = commentRepository.countByEventId(eventIds);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0], //eventId
+                        result -> (Long) result[1]  //comments count
                 ));
     }
 
@@ -334,7 +352,16 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void updateEventConfirmedRequestsFullDto(Map<Long, Long> confirmedRequestsCountMap, List<EventFullDto> eventsDto) {
+    private void updateEventCommentsShortDtos(Map<Long, Long> commentCountMap, List<EventShortDto> eventsDto) {
+        for (EventShortDto event : eventsDto) {
+            Long count = commentCountMap.get(event.getId());
+            if (count != null) {
+                event.setCommentsCount(count);
+            }
+        }
+    }
+
+    private void updateEventConfirmedRequestsFullDtos(Map<Long, Long> confirmedRequestsCountMap, List<EventFullDto> eventsDto) {
         for (EventFullDto event : eventsDto) {
             Long count = confirmedRequestsCountMap.get(event.getId());
             if (count != null) {
@@ -640,6 +667,4 @@ public class EventServiceImpl implements EventService {
         ClientRequestDto requestDto = new ClientRequestDto(start, end, uris, unique);
         return client.getStats(requestDto);
     }
-
-
 }

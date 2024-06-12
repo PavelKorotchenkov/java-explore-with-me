@@ -86,7 +86,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleException(final CategoryInUseException e) {
         log.warn("Exception: {}", e.getMessage());
-        String reason = "Cannot delete the category because there are events related to the category";
+        String reason = "Cannot deleteByAuthor the category because there are events related to the category";
         HttpStatus status = HttpStatus.CONFLICT;
         return createApiError(e, reason, status);
     }
@@ -105,6 +105,24 @@ public class ErrorHandler {
     public ApiError handleException(final EventDateViolationException e) {
         log.warn("Exception: {}", e.getMessage());
         String reason = "Event date must be at least in two hours after creating";
+        HttpStatus status = HttpStatus.CONFLICT;
+        return createApiError(e, reason, status);
+    }
+
+    @ExceptionHandler(CommentUpdateNotByAuthorException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleException(final CommentUpdateNotByAuthorException e) {
+        log.warn("Exception: {}", e.getMessage());
+        String reason = "Only author can change his comment";
+        HttpStatus status = HttpStatus.CONFLICT;
+        return createApiError(e, reason, status);
+    }
+
+    @ExceptionHandler(CommentUpdateTimeLimitExceededException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleException(final CommentUpdateTimeLimitExceededException e) {
+        log.warn("Exception: {}", e.getMessage());
+        String reason = "It's not allowed to change a comment after 1 hour is passed";
         HttpStatus status = HttpStatus.CONFLICT;
         return createApiError(e, reason, status);
     }

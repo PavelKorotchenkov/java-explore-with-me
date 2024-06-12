@@ -10,5 +10,6 @@ public interface CommentShort {
     String getAuthorName();
 
     LocalDateTime getCreatedOn();
+
     boolean isUpdated();
 }

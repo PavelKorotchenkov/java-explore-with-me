@@ -21,10 +21,10 @@ public class Comment {
     private long id;
     private String text;
     @JoinColumn(name = "event_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
     @JoinColumn(name = "author_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User author;
     @Column(name = "comment_created_on")
     private LocalDateTime createdOn;

@@ -12,12 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.Client;
 import ru.practicum.dto.ClientRequestDto;
 import ru.practicum.dto.StatsResponseDto;
+import ru.practicum.dto.comment.CommentCountDto;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.location.LocationDtoMapper;
-import ru.practicum.dto.participation.EventRequestStatusUpdateRequest;
-import ru.practicum.dto.participation.EventRequestStatusUpdateResult;
-import ru.practicum.dto.participation.ParticipationRequestDto;
-import ru.practicum.dto.participation.ParticipationRequestMapper;
+import ru.practicum.dto.participation.*;
 import ru.practicum.enums.EventSort;
 import ru.practicum.enums.EventState;
 import ru.practicum.enums.EventStateAction;
@@ -319,20 +317,20 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getConfirmedRequestsCount(Set<Long> eventIds) {
-        List<Object[]> results = participationRequestRepository.countParticipantsInAndStatus(eventIds, ParticipationRequestStatus.CONFIRMED);
+        List<ParticipantCountDto> results = participationRequestRepository.countParticipantsInAndStatus(eventIds, ParticipationRequestStatus.CONFIRMED);
         return results.stream()
                 .collect(Collectors.toMap(
-                        result -> (Long) result[0], //eventId
-                        result -> (Long) result[1]  //confirmed requests count
+                        ParticipantCountDto::getEventId,
+                        ParticipantCountDto::getConfirmedRequestCount
                 ));
     }
 
     private Map<Long, Long> getCommentCount(Set<Long> eventIds) {
-        List<Object[]> results = commentRepository.countByEventId(eventIds);
+        List<CommentCountDto> results = commentRepository.countByEventId(eventIds);
         return results.stream()
                 .collect(Collectors.toMap(
-                        result -> (Long) result[0], //eventId
-                        result -> (Long) result[1]  //comments count
+                        CommentCountDto::getEventId,
+                        CommentCountDto::getCommentCount
                 ));
     }
 

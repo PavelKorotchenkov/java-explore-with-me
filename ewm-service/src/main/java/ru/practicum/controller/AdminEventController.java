@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.AdminGetEventParamsDto;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
+import ru.practicum.service.CommentService;
 import ru.practicum.service.EventService;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.List;
 public class AdminEventController {
 
     private final EventService eventService;
+    private final CommentService commentService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -45,6 +47,14 @@ public class AdminEventController {
         EventFullDto result = eventService.updateByAdmin(eventId, updateRequest);
         log.info("Response for admin request for updating the event: eventId: {}, request: {}", eventId, result);
         return result;
+    }
+
+    @DeleteMapping("/{eventId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long eventId,
+                              @PathVariable Long commentId) {
+        log.info("Request for deleting comment by admin: {}, for event: {}", commentId, eventId);
+        commentService.deleteByAdmin(eventId, commentId);
     }
 
     private AdminGetEventParamsDto createParams(List<Long> users, List<String> states, List<Long> categories,

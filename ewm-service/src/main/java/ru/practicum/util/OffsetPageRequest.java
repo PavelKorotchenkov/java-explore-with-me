@@ -25,4 +25,5 @@ public class OffsetPageRequest extends PageRequest {
     public long getOffset() {
         return this.offset;
     }
+
 }

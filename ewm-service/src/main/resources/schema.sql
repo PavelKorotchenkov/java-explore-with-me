@@ -59,3 +59,14 @@ CREATE TABLE IF NOT EXISTS compilation_events (
     FOREIGN KEY (compilation_id) REFERENCES compilations(compilation_id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS comments (
+    comment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE NOT NULL,
+    text varchar(2000),
+    event_id BIGINT,
+    author_id BIGINT,
+    comment_created_on timestamp WITHOUT TIME ZONE,
+    updated boolean,
+    FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

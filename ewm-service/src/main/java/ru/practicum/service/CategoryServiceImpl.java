@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Category with id='" + catId + "' not found"));
         Optional<Event> optEvent = eventRepository.findFirstByCategoryId(catId);
         if (optEvent.isPresent()) {
-            throw new CategoryInUseException("Failed to delete category with id='" + catId + "'");
+            throw new CategoryInUseException("Failed to deleteByAuthor category with id='" + catId + "'");
         }
         categoryRepository.deleteById(catId);
     }

@@ -18,6 +18,7 @@ import ru.practicum.service.EventService;
 import ru.practicum.util.OffsetPageRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -74,10 +75,9 @@ public class PublicEventController {
     @GetMapping("/{id}/comments")
     @ResponseStatus(HttpStatus.OK)
     public List<CommentShort> getComments(@PathVariable Long id,
-                                          @RequestParam(defaultValue = "0") int from,
-                                          @RequestParam(defaultValue = "10") int size) {
+                                          @RequestParam(defaultValue = "0") @Min(0) int from,
+                                          @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.info("Request for all comments to event: {}", id);
-        validate(from, size);
         Pageable page = OffsetPageRequest.createPageRequest(from, size, Sort.by(Sort.Direction.DESC, "CreatedOn"));
         List<CommentShort> response = commentService.getAll(id, page);
         log.info("Request for all comments to event: {}", id);
@@ -113,12 +113,5 @@ public class PublicEventController {
         String uri = request.getRequestURI();
         String ip = request.getRemoteAddr();
         client.saveStats(new StatsRequestDto(APP, uri, ip, LocalDateTime.now()));
-    }
-
-    private static void validate(int from, int size) {
-        if (from < 0 || size < 1) {
-            throw new IllegalArgumentException("Parameter 'from' cannot be less than 0, " +
-                    "parameter size cannot be less than 1");
-        }
     }
 }

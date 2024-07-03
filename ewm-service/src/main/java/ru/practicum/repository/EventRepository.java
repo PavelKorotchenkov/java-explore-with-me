@@ -19,7 +19,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
 
     Page<Event> findByInitiatorId(long initiatorId, Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE e.category.id = :categoryId")
     Optional<Event> findFirstByCategoryId(@Param("categoryId") long categoryId);
 }
 

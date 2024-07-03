@@ -58,7 +58,6 @@ public class ParticipationServiceImpl implements ParticipationService {
 
         ParticipationRequest participationRequest = new ParticipationRequest();
 
-        // если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного
         if (!event.getRequestModeration() || participantsLimit == 0) {
             participationRequest.setStatus(ParticipationRequestStatus.CONFIRMED);
             eventRepository.save(event);
@@ -88,23 +87,23 @@ public class ParticipationServiceImpl implements ParticipationService {
     }
 
     private void validateRequest(long userId, long eventId, Event event, long countParticipants, long participantsLimit) {
-        //нельзя добавить повторный запрос (Ожидается код ошибки 409)
+        //duplicate request is forbidden (status code 409 expected)
         Optional<ParticipationRequest> existingRequest = participationRequestRepository.findByEventIdAndRequesterId(eventId, userId);
         if (existingRequest.isPresent()) {
             throw new ParticipationDuplicateRequestException("Request has already been sent");
         }
 
-        //инициатор события не может добавить запрос на участие в своём событии (Ожидается код ошибки 409)
+        //event initiator cannot request participation in his own event (status code 409 expected)
         if (event.getInitiator().getId() == userId) {
             throw new ParticipationRequestByInitiatorException("Request for event participation by it's initiator is forbidden");
         }
 
-        //нельзя участвовать в неопубликованном событии (Ожидается код ошибки 409)
+        //cannot participate in not published event (status code 409 expected)
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new PaticipationNotPublishedException("Request for unpublished event is forbidden");
         }
 
-        //если у события достигнут лимит запросов на участие - необходимо вернуть 409
+        //if the event has reached the limit of participation requests - (status code 409 expected)
         if (participantsLimit != 0 && countParticipants == participantsLimit) {
             throw new ParticipationLimitExceededException("Participant limit='" + event.getParticipantLimit() + "' exceeded");
         }

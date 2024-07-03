@@ -137,7 +137,7 @@ class CommentServiceImplTest {
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1l)
+                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1L)
         );
 
         verify(commentRepository, never()).save(any(Comment.class));
@@ -156,7 +156,7 @@ class CommentServiceImplTest {
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1l)
+                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1L)
         );
 
         verify(commentRepository, never()).save(any(Comment.class));
@@ -177,7 +177,7 @@ class CommentServiceImplTest {
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1l)
+                () -> commentServiceTest.updateByAuthor(new NewCommentDto(), 1L, 1L, 1L)
         );
 
         verify(commentRepository, never()).save(any(Comment.class));

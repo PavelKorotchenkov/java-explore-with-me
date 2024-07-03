@@ -17,13 +17,13 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminCompilationController {
 
-    private final CompilationService adminCompilationService;
+    private final CompilationService compilationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto postNewCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.info("Request for posting a new compilation: {}", newCompilationDto);
-        CompilationDto response = adminCompilationService.create(newCompilationDto);
+        CompilationDto response = compilationService.create(newCompilationDto);
         log.info("Response for posting a new compilation: {}", response);
         return response;
     }
@@ -32,7 +32,7 @@ public class AdminCompilationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long compId) {
         log.info("Request for deleting compilation with id: {}", compId);
-        adminCompilationService.delete(compId);
+        compilationService.delete(compId);
     }
 
     @PatchMapping("/{compId}")
@@ -40,7 +40,7 @@ public class AdminCompilationController {
     public CompilationDto updateCompilation(@PathVariable Long compId,
                                             @RequestBody @Valid UpdateCompilationRequest updateCompilationRequest) {
         log.info("Request for updating compilation with id: {}, updated compilation: {}", compId, updateCompilationRequest);
-        CompilationDto response = adminCompilationService.update(compId, updateCompilationRequest);
+        CompilationDto response = compilationService.update(compId, updateCompilationRequest);
         log.info("Response for updating compilation: {}", response);
         return response;
     }

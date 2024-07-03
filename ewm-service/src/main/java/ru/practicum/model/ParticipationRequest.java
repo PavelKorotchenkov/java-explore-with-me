@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @ToString(of = "id")
 @EqualsAndHashCode(of = "id")
 @Entity
+@Builder
 @Table(name = "participation_requests", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"event_id", "requester_id"})
 })

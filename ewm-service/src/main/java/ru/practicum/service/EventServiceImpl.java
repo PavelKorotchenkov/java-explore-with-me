@@ -153,25 +153,25 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Event with id='" + eventId + "' not found"));
         checkUserIsInitiator(event, userId);
 
-        //проверяем, что нам передали валидный статус (подтверждено/отменено) и запоминаем его
+        //validate status (confirmed/rejected) and save it
         ParticipationRequestStatus status = ParticipationRequestStatus.getStatus(request.getStatus())
                 .orElseThrow(() -> new IllegalArgumentException("Participation request status='" + request.getStatus() + "' is not valid"));
 
-        //достаем все запросы на участие
+        //get all participation requests
         List<ParticipationRequest> requestsListToUpdate = participationRequestRepository.findAllById(request.getRequestIds());
         List<ParticipationRequest> confirmedRequests = new ArrayList<>();
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
 
-        //проверяем что статус у запросов pending
+        //checking that requests status is pending
         requestsListToUpdate.forEach(participationRequest -> {
             if (!participationRequest.getStatus().equals(ParticipationRequestStatus.PENDING)) {
                 throw new ParticipationRequestUpdateNotPendingException("Participation request status='" + participationRequest.getStatus() + "' must be pending");
             }
         });
 
-        //если заявки одобрены
+        //if requests are confirmed
         if (status.equals(ParticipationRequestStatus.CONFIRMED)) {
-            //если лимит не установлен или нет модерации, одобряем заявки
+            //confirm if there is no participation limit or moderation is not needed
             if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
                 for (ParticipationRequest participationRequest : requestsListToUpdate) {
                     participationRequest.setStatus(status);
@@ -182,28 +182,27 @@ public class EventServiceImpl implements EventService {
                 int participantsLimit = event.getParticipantLimit();
                 checkEventHasFreeSlots(participantsCount, participantsLimit);
 
-                // проходимся по каждой заявке
                 for (ParticipationRequest participationRequest : requestsListToUpdate) {
-                    // если количество участников достигло лимита, отменяем заявку
+                    // reject the request if participants amount hit the limit
                     if (participantsCount >= participantsLimit) {
                         participationRequest.setStatus(ParticipationRequestStatus.REJECTED);
                         rejectedRequests.add(participationRequest);
                     } else {
-                        // иначе одобряем заявку
+                        // otherwise confirm it
                         participationRequest.setStatus(ParticipationRequestStatus.CONFIRMED);
                         confirmedRequests.add(participationRequest);
                     }
                 }
             }
         } else {
-            //если заявки не одобрены
+            //if requests are not confirmed
             for (ParticipationRequest participationRequest : requestsListToUpdate) {
                 participationRequest.setStatus(status);
                 rejectedRequests.add(participationRequest);
             }
         }
 
-        //сохраняем заявки с новым статусом
+        //saving requests with new status
         participationRequestRepository.saveAll(requestsListToUpdate);
         List<ParticipationRequestDto> confirmedDtos = confirmedRequests.stream()
                 .map(participationRequestMapper::toDto)

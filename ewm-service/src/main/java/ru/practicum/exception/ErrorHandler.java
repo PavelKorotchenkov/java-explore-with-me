@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,15 @@ public class ErrorHandler {
     public ApiError handleException(final Exception e) {
         log.warn("Exception: {}", e.getMessage());
         String reason = "Incorrectly made request";
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        return createApiError(e, reason, status);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidationExceptions(MethodArgumentNotValidException e) {
+        log.warn("Exception: {}", e.getMessage());
+        String reason = "Validation failed";
         HttpStatus status = HttpStatus.BAD_REQUEST;
         return createApiError(e, reason, status);
     }
